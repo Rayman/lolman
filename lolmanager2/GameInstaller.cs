@@ -39,7 +39,7 @@ namespace lolmanager2
             this.remoteName = string.Empty;
             this.localName = string.Empty;
             this.bytesDownloaded = 0;
-            this.downloadTime = 0;            
+            this.downloadTime = 0;
         }
 
         internal Int64 fileSize;
@@ -83,7 +83,7 @@ namespace lolmanager2
         {
             if (to == string.Empty)
                 throw new Exception("No empty dir plx");
-            
+
             if (!Directory.Exists(to))
             {
                 MessageBoxResult result = MessageBox.Show(
@@ -191,7 +191,7 @@ namespace lolmanager2
         {
             this.parent.ReportProgress(0, new InstallChangedEventArgs(InstallChangedEventType.log, "Start fast file scan"));
             List<ToDoFile> todo = new List<ToDoFile>();
-            foreach(ToDoFile file in this.toDoFiles)
+            foreach (ToDoFile file in this.toDoFiles)
             {
                 if (!File.Exists(file.localUrl) || (new FileInfo(file.localUrl)).Length != file.length)
                 {
