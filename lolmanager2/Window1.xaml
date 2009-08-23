@@ -12,10 +12,60 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Games" Name="tabItem2">
-                <Grid />
+                <Grid>
+                    <DockPanel Height="28" Name="dockPanel3" VerticalAlignment="Top">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0">Game List:</Label>
+                            <Button Grid.Column="1" Margin="0,0,3,0" Name="ButtonAddToQueue">Add to Queue</Button>
+                            <Button Grid.Column="2" Margin="3,0,0,0" Name="ButtonRefreshGameList" Click="ButtonRefreshGameList_Click">Refresh</Button>
+                        </Grid>
+                    </DockPanel>
+                    <DockPanel Name="dockPanel4" Margin="0,32,0,0" VerticalAlignment="Stretch">
+                        <ListView Name="ListViewGameList" ItemsSource="{Binding}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Width="400" Header="Name"   DisplayMemberBinding="{Binding Name}" />
+                                    <GridViewColumn Width="400" Header="Size"   DisplayMemberBinding="{Binding Name}" />
+                                    <GridViewColumn Width="250" Header="Status" DisplayMemberBinding="{Binding Status}" />
+                                    <GridViewColumn Width="200" Header="Local"  DisplayMemberBinding="{Binding Local}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
+                </Grid>
             </TabItem>
-            <TabItem Header="Local" Name="tabItem3">
-                <Grid />
+            <TabItem Header="Queue" Name="tabItem3">
+                <Grid>
+                    <DockPanel Height="28" Name="dockPanel5" VerticalAlignment="Top">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0">Game Queue:</Label>
+                            <Button Grid.Column="1" Margin="0,0,3,0">Remove</Button>
+                            <Button Grid.Column="2" Margin="3,0,0,0">Up</Button>
+                        </Grid>
+                    </DockPanel>
+                    <DockPanel Margin="0,32,0,0" VerticalAlignment="Stretch">
+                        <ListView Name="ListViewGameQueue" ItemsSource="{Binding}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Width="400" Header="Name"   DisplayMemberBinding="{Binding Name}" />
+                                    <GridViewColumn Width="400" Header="Size"   DisplayMemberBinding="{Binding Name}" />
+                                    <GridViewColumn Width="250" Header="Status" DisplayMemberBinding="{Binding Status}" />
+                                    <GridViewColumn Width="200" Header="Local"  DisplayMemberBinding="{Binding Local}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
+                </Grid>
             </TabItem>
             <TabItem Header="Downloads" Name="tabItem4">
                 <DockPanel>
@@ -43,12 +93,12 @@
                                 <ColumnDefinition Width="100" />
                                 <ColumnDefinition Width="100" />
                                 <ColumnDefinition Width="100" />
-                            </Grid.ColumnDefinitions>   
+                            </Grid.ColumnDefinitions>
                             <TextBox Margin="6,0,3,0" Name="textBoxAddServer">url.to.server/serverinfo.txt</TextBox>
                             <Button Grid.Column="1" Margin="3,0,3,0" Name="ButtonAddServer" Click="ButtonAddServer_Click">Add</Button>
                             <Button Grid.Column="2" Margin="3,0,3,0" Name="ButtonRemoveServer" Click="ButtonRemoveServer_Click">Remove</Button>
                             <Button Grid.Column="3" Margin="3,0,6,0" Name="ButtonRefreshServers" Click="ButtonRefreshServers_Click">Refresh</Button>
-                            
+
                         </Grid>
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Stretch" Margin="0,51,0,0" VerticalAlignment="Stretch">

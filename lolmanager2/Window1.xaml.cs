@@ -79,6 +79,10 @@ namespace lolmanager2
 
             bgWorker = new BackgroundWorker();
             bgWorker.DoWork += new DoWorkEventHandler(RefreshServerList);
+            bgWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs args)
+            {
+                textBoxLog.Text += "\nRefreshing server list completed!";
+            };
 
             serverTable.Rows.Clear();
 
@@ -87,8 +91,9 @@ namespace lolmanager2
                 serverTable.Rows.Add(s, "Waiting for Update...");
             }
 
-            serverTable.AcceptChanges();
             bgWorker.RunWorkerAsync();
+
+            textBoxLog.Text += "\nStarted refreshing server list...";
         }
 
         void RefreshServerList(object sender, DoWorkEventArgs e)
@@ -284,5 +289,21 @@ namespace lolmanager2
 
         #endregion
 
+        private void ButtonRefreshGameList_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshServers();
+            bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(ServerRefreshCompleted);
+        }
+
+        void ServerRefreshCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            bgWorker.DoWork += new DoWorkEventHandler(DownloadAllGameInfo);
+            bgWorker.RunWorkerAsync();
+        }
+
+        void DownloadAllGameInfo(object sender, DoWorkEventArgs e)
+        {
+            //Download all game info's and parse them!!!
+        }
     }
 }
