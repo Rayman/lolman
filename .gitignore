@@ -1,0 +1,6 @@
+lolmanager2/bin
+lolmanager2/obj
+*.user
+*.suo
+_ReSharper.*
+*.sln.cache
