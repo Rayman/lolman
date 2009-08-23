@@ -19,6 +19,7 @@ namespace lolmanager2
         const string serverListFileName = "serverlist.txt";
         private ServerManager serverManager = new ServerManager(serverListFileName);
         DataTable serverTable;
+        List<ServerGameList> serverList = new List<ServerGameList>();
 
         //These hold the stuff for the 'downloads' page
         DataTable downloadTable;
@@ -36,6 +37,12 @@ namespace lolmanager2
         {
             internal Int64 fileSize;
             internal DateTime timeStamp;
+        }
+
+        struct ServerGameList
+        {
+            internal string url;
+            internal List<string> dirs;
         }
 
         public Window1()
@@ -81,27 +88,53 @@ namespace lolmanager2
             }
 
             serverTable.AcceptChanges();
-
             bgWorker.RunWorkerAsync();
         }
 
         void RefreshServerList(object sender, DoWorkEventArgs e)
         {
             WebClient client = new WebClient();
+            this.serverList = new List<ServerGameList>();
 
             foreach (string s in this.serverManager.GetServers())
             {
                 string status = "Online";
-                string result;
+                string result = null;
+
+                //Init a new game list for the server
+                ServerGameList serverGameList = new ServerGameList();
+                serverGameList.url = s;
+                serverGameList.dirs = new List<string>();
+
                 try
                 {
                     result = client.DownloadString(s);
+                    string[] dirs = result.Split('\0');
+                    if (dirs.Length == 0)
+                        status = "Error, not a lol server";
+                    else
+                    {
+                        if (dirs[0] != "lol.dirlist")
+                            status = "Error, not a lol server";
+                        else
+                        {
+                            //Add all dirs
+                            for (int i = 1; i < dirs.Length; i++)
+                                serverGameList.dirs.Add(dirs[i]);
+
+                            //Add the gamelist to the serverlist
+                            this.serverList.Add(serverGameList);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
                     status = ex.Message;
                 }
-                serverTable.Rows.Find(s)["Status"] = status;
+                finally
+                {
+                    serverTable.Rows.Find(s)["Status"] = status;
+                }
             }
         }
 
@@ -146,8 +179,8 @@ namespace lolmanager2
             this.bgWorker.WorkerReportsProgress = true;
             this.bgWorker.DoWork += new DoWorkEventHandler(GameDownloadStart);
             this.bgWorker.ProgressChanged += new ProgressChangedEventHandler(GameDownloadProgressChanged);
-            this.bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(GameDownloadCompleted);            
-            this.bgWorker.RunWorkerAsync();    
+            this.bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(GameDownloadCompleted);
+            this.bgWorker.RunWorkerAsync();
         }
 
         void GameDownloadStart(object sender, DoWorkEventArgs e)
@@ -183,8 +216,8 @@ namespace lolmanager2
                     textBoxDownloads.Text = "Downloading...";
                     object lastItem = ListViewDownloads.Items[ListViewDownloads.Items.Count - 1];
                     ListViewDownloads.ScrollIntoView(lastItem);
-                    break;    
-                
+                    break;
+
                 case InstallChangedEventType.downloadProgressChanged:
                     DataRow row = downloadTable.Rows.Find(drp.remoteName);
                     if (row != null)
