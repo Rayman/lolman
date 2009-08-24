@@ -61,10 +61,12 @@ namespace lolmanager2
             {
                 get
                 {
-                    if (size > 1024)
-                        return (size / 1024).ToString() + "kB";
+                    if (size < 1024)
+                        return size.ToString() + " B";
+                    else if (size < 1024 * 1024)
+                        return Math.Round((double)size / 1024, 1).ToString() + " kB";
                     else
-                        return size.ToString() + "B";
+                        return Math.Round((double)size / 1024 / 1024, 1).ToString() + " MB";
                 }
             }
             public string name { get; set; }
@@ -455,10 +457,13 @@ namespace lolmanager2
             }
         }
 
-        private void ParseXMLRecursive(XmlNode child, ref Int64 size)
+        private void ParseXMLRecursive(XmlNode node, ref Int64 size)
         {
-            if (child.Name == "file")
-                size += Int64.Parse(child.Attributes["length"].Value);
+            if (node.Name == "file")
+                size += Int64.Parse(node.Attributes["length"].Value);
+            if (node.Name == "folder")
+                foreach (XmlNode child in node.ChildNodes)
+                    ParseXMLRecursive(child, ref size);
         }
 
         private void ButtonAddToQueue_Click(object sender, RoutedEventArgs e)
