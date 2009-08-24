@@ -21,7 +21,7 @@
                                 <ColumnDefinition Width="100" />
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0">Game List:</Label>
-                            <Button Grid.Column="1" Margin="0,0,3,0" Name="ButtonAddToQueue">Add to Queue</Button>
+                            <Button Grid.Column="1" Margin="0,0,3,0" Name="ButtonAddToQueue" Click="ButtonAddToQueue_Click">Add to Queue</Button>
                             <Button Grid.Column="2" Margin="3,0,0,0" Name="ButtonRefreshGameList" Click="ButtonRefreshGameList_Click">Refresh</Button>
                         </Grid>
                     </DockPanel>
@@ -29,10 +29,10 @@
                         <ListView Name="ListViewGameList" ItemsSource="{Binding}">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Width="400" Header="Name"   DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Width="400" Header="Size"   DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Width="250" Header="Status" DisplayMemberBinding="{Binding Status}" />
-                                    <GridViewColumn Width="200" Header="Local"  DisplayMemberBinding="{Binding Local}" />
+                                    <GridViewColumn Width="400" Header="Name"   DisplayMemberBinding="{Binding Path=name}" />
+                                    <GridViewColumn Width="70" Header="Size"    DisplayMemberBinding="{Binding Path=sizeHumanReadable}" />
+                                    <GridViewColumn Width="200" Header="Status" DisplayMemberBinding="{Binding Path=statusInfo}" />
+                                    <GridViewColumn Width="200" Header="Local"  DisplayMemberBinding="{Binding Path=local}" />
                                 </GridView>
                             </ListView.View>
                         </ListView>

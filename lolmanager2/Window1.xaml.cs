@@ -7,6 +7,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Net;
+using System.Xml;
+using System.Threading;
+using System.Collections.ObjectModel;
+using System.Collections;
 
 namespace lolmanager2
 {
@@ -20,6 +24,10 @@ namespace lolmanager2
         private ServerManager serverManager = new ServerManager(serverListFileName);
         DataTable serverTable;
         List<ServerGameList> serverList = new List<ServerGameList>();
+
+        //For managing the game list
+        ObservableCollection<LolGame> _gameList = new ObservableCollection<LolGame>();
+        SynchronisedObservableCollection<LolGame> gameList;
 
         //These hold the stuff for the 'downloads' page
         DataTable downloadTable;
@@ -43,6 +51,29 @@ namespace lolmanager2
         {
             internal string url;
             internal List<string> dirs;
+            internal string status;
+        }
+
+        class LolGame
+        {
+            public Int64 size { get; set; }
+            public string sizeHumanReadable
+            {
+                get
+                {
+                    if (size > 1024)
+                        return (size / 1024).ToString() + "kB";
+                    else
+                        return size.ToString() + "B";
+                }
+            }
+            public string name { get; set; }
+
+            public string status { get; set; }
+            public string infohash { get; set; }
+            public List<string> urls;
+            public string local { get; set; }
+            public string statusInfo { get { return urls.Count.ToString() + " servers"; } }
         }
 
         public Window1()
@@ -64,12 +95,30 @@ namespace lolmanager2
             serverTable.PrimaryKey = new DataColumn[] { primary2 };
             listViewServerList.DataContext = serverTable;
 
+            ////Init the game list
+            //gameTable = new DataTable("Server List");
+            //gameTable.Columns.Add("Name", typeof(string));
+            //gameTable.Columns.Add("Size", typeof(string));
+            //gameTable.Columns.Add("Status", typeof(string));
+            //gameTable.Columns.Add("Local", typeof(string));
+            //ListViewGameList.DataContext = gameTable;
+
+            //gameTable.Rows.Add("asdf", "fddfa", "asdfdfda", "df");
+
+            gameList = new SynchronisedObservableCollection<LolGame>(this._gameList);
+            ListViewGameList.DataContext = this.gameList;
+
             RefreshServers();
         }
 
         #region Server List
 
         void RefreshServers()
+        {
+            RefreshServers(null);
+        }
+
+        void RefreshServers(RunWorkerCompletedEventHandler whenDone)
         {
             if (bgWorker.IsBusy)
             {
@@ -84,15 +133,18 @@ namespace lolmanager2
                 textBoxLog.Text += "\nRefreshing server list completed!";
             };
 
-            serverTable.Rows.Clear();
+            //If whendone is set, add an eventhandler
+            if (whenDone != null)
+                bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(whenDone);
 
+            //Empty all rows
+            serverTable.Rows.Clear();
             foreach (string s in this.serverManager.GetServers())
             {
                 serverTable.Rows.Add(s, "Waiting for Update...");
             }
 
             bgWorker.RunWorkerAsync();
-
             textBoxLog.Text += "\nStarted refreshing server list...";
         }
 
@@ -125,7 +177,10 @@ namespace lolmanager2
                         {
                             //Add all dirs
                             for (int i = 1; i < dirs.Length; i++)
-                                serverGameList.dirs.Add(dirs[i]);
+                                if (dirs[i].Length == 0)
+                                    continue;
+                                else
+                                    serverGameList.dirs.Add(dirs[i]);
 
                             //Add the gamelist to the serverlist
                             this.serverList.Add(serverGameList);
@@ -288,22 +343,129 @@ namespace lolmanager2
         }
 
         #endregion
+        #region Games
 
         private void ButtonRefreshGameList_Click(object sender, RoutedEventArgs e)
         {
-            RefreshServers();
-            bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(ServerRefreshCompleted);
+            RefreshServers(new RunWorkerCompletedEventHandler(ServerRefreshCompleted));
         }
 
         void ServerRefreshCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            bgWorker = new BackgroundWorker();
             bgWorker.DoWork += new DoWorkEventHandler(DownloadAllGameInfo);
             bgWorker.RunWorkerAsync();
         }
 
         void DownloadAllGameInfo(object sender, DoWorkEventArgs e)
         {
-            //Download all game info's and parse them!!!
+
+            WebClient client = new WebClient();
+
+            foreach (ServerGameList server in this.serverList)
+            {
+                if (server.status != null && server.status != "Online")
+                    continue;
+
+                foreach (string dir in server.dirs)
+                {
+                    LolGame game = new LolGame();
+                    game.status = "OK";
+
+                    string url = server.url.Substring(0, server.url.LastIndexOf("/") + 1) + dir;
+                    XmlElement root;
+
+                    game.urls = new List<string>();
+                    game.urls.Add(url);
+
+                    Int64 size = 0;
+
+                    try
+                    {
+                        string result = client.DownloadString(new Uri(url));
+
+                        //Parse the xml
+                        XmlDocument doc = new XmlDocument();
+                        doc.LoadXml(result);
+                        root = doc.DocumentElement;
+
+                        if (root.Name != "install")
+                        {
+                            throw new Exception("XML root must be 'install'");
+                        }
+                        if (root.Attributes["version"].Value != "1.1")
+                        {
+                            throw new Exception("Error, version of XML file is wrong");
+                        }
+
+                        //Count the total size
+                        foreach (XmlNode node in root.ChildNodes)
+                        {
+                            if (node.Name == "name")
+                                game.name = node.InnerText;
+
+                            if (node.Name == "files")
+                            {
+                                foreach (XmlNode child in node.ChildNodes)
+                                {
+                                    ParseXMLRecursive(child, ref size);
+                                }
+                            }
+
+                            if (node.Name == "infohash")
+                                game.infohash = node.InnerText;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        game.status = ex.Message;
+                    }
+
+                    if (game.infohash == null)
+                    {
+                        game.status = "Error, no infohash";
+                    }
+
+                    game.size = size;
+
+                    //Add the game to the gamelist
+                    //If it is already there, add the infohash
+                    LolGame previous = null;
+                    if (game.status == "OK")
+                    {
+                        foreach (LolGame g in this.gameList)
+                        {
+                            if (g.infohash == game.infohash)
+                            {
+                                previous = g;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (previous != null)
+                    {
+                        this.gameList.Remove(previous);
+                        previous.urls.Add(game.urls[0]);
+                        this.gameList.Add(previous);
+                    }
+                    else
+                        this.gameList.Add(game);
+                }
+            }
         }
+
+        private void ParseXMLRecursive(XmlNode child, ref Int64 size)
+        {
+            if (child.Name == "file")
+                size += Int64.Parse(child.Attributes["length"].Value);
+        }
+
+        private void ButtonAddToQueue_Click(object sender, RoutedEventArgs e)
+        {
+            ListViewGameList.UpdateLayout();
+        }
+
+        #endregion
     }
 }
