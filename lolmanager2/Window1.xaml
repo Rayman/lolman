@@ -105,8 +105,8 @@
                         <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6,6,6,6" Name="listViewServerList" ItemsSource="{Binding}">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Width="300" Header="Server Url" DisplayMemberBinding="{Binding Url}" />
-                                    <GridViewColumn Width="500" Header="Status" DisplayMemberBinding="{Binding Status}" />
+                                    <GridViewColumn Width="300" Header="Server Url" DisplayMemberBinding="{Binding Path=url}" />
+                                    <GridViewColumn Width="500" Header="Status"     DisplayMemberBinding="{Binding Path=status}" />
                                 </GridView>
                             </ListView.View>
                         </ListView>

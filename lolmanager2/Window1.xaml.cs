@@ -22,8 +22,8 @@ namespace lolmanager2
         //For managing the server list
         const string serverListFileName = "serverlist.txt";
         private ServerManager serverManager = new ServerManager(serverListFileName);
-        DataTable serverTable;
-        List<ServerGameList> serverList = new List<ServerGameList>();
+        ObservableCollection<ServerGameList> _serverList = new ObservableCollection<ServerGameList>();
+        SynchronisedObservableCollection<ServerGameList> serverList;
 
         //For managing the game list
         ObservableCollection<LolGame> _gameList = new ObservableCollection<LolGame>();
@@ -49,9 +49,9 @@ namespace lolmanager2
 
         struct ServerGameList
         {
-            internal string url;
-            internal List<string> dirs;
-            internal string status;
+            public string url { get; set; }
+            public List<string> dirs;
+            public string status { get; set; }
         }
 
         class LolGame
@@ -91,21 +91,8 @@ namespace lolmanager2
             ListViewDownloads.DataContext = downloadTable;
 
             //Init the server list
-            serverTable = new DataTable("Server List");
-            DataColumn primary2 = serverTable.Columns.Add("Url", typeof(string));
-            serverTable.Columns.Add("Status", typeof(string));
-            serverTable.PrimaryKey = new DataColumn[] { primary2 };
-            listViewServerList.DataContext = serverTable;
-
-            ////Init the game list
-            //gameTable = new DataTable("Server List");
-            //gameTable.Columns.Add("Name", typeof(string));
-            //gameTable.Columns.Add("Size", typeof(string));
-            //gameTable.Columns.Add("Status", typeof(string));
-            //gameTable.Columns.Add("Local", typeof(string));
-            //ListViewGameList.DataContext = gameTable;
-
-            //gameTable.Rows.Add("asdf", "fddfa", "asdfdfda", "df");
+            serverList = new SynchronisedObservableCollection<ServerGameList>(this._serverList);
+            listViewServerList.DataContext = serverList;
 
             gameList = new SynchronisedObservableCollection<LolGame>(this._gameList);
             ListViewGameList.DataContext = this.gameList;
@@ -140,10 +127,13 @@ namespace lolmanager2
                 bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(whenDone);
 
             //Empty all rows
-            serverTable.Rows.Clear();
-            foreach (string s in this.serverManager.GetServers())
+            serverList.Clear();
+            foreach (string url in this.serverManager.GetServers())
             {
-                serverTable.Rows.Add(s, "Waiting for Update...");
+                ServerGameList list = new ServerGameList();
+                list.url = url;
+                list.status = "Waiting for Update...";
+                serverList.Add(list);
             }
 
             bgWorker.RunWorkerAsync();
@@ -153,28 +143,28 @@ namespace lolmanager2
         void RefreshServerList(object sender, DoWorkEventArgs e)
         {
             WebClient client = new WebClient();
-            this.serverList = new List<ServerGameList>();
 
             foreach (string s in this.serverManager.GetServers())
             {
-                string status = "Online";
+                //Holds the webresponse
                 string result = null;
 
                 //Init a new game list for the server
                 ServerGameList serverGameList = new ServerGameList();
                 serverGameList.url = s;
                 serverGameList.dirs = new List<string>();
+                serverGameList.status = "Online";
 
                 try
                 {
                     result = client.DownloadString(s);
                     string[] dirs = result.Split('\0');
                     if (dirs.Length == 0)
-                        status = "Error, not a lol server";
+                        serverGameList.status = "Error, not a lol server";
                     else
                     {
                         if (dirs[0] != "lol.dirlist")
-                            status = "Error, not a lol server";
+                            serverGameList.status = "Error, not a lol server";
                         else
                         {
                             //Add all dirs
@@ -183,19 +173,29 @@ namespace lolmanager2
                                     continue;
                                 else
                                     serverGameList.dirs.Add(dirs[i]);
-
-                            //Add the gamelist to the serverlist
-                            this.serverList.Add(serverGameList);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    status = ex.Message;
+                    serverGameList.status = ex.Message;
                 }
                 finally
                 {
-                    serverTable.Rows.Find(s)["Status"] = status;
+
+
+                    //Find the url to remove
+                    ServerGameList? itemToRemove = null;
+                    foreach (ServerGameList list in this.serverList)
+                    {
+                        if (list.url == s)
+                        {
+                            itemToRemove = list;
+                            break;
+                        }
+                    }
+                    serverList.Remove(itemToRemove.Value);
+                    serverList.Add(serverGameList);
                 }
             }
         }
@@ -213,12 +213,24 @@ namespace lolmanager2
 
         private void ButtonRemoveServer_Click(object sender, RoutedEventArgs e)
         {
-            DataRowView row = listViewServerList.SelectedItem as DataRowView;
-            if (row != null)
+            //Get the selection
+            string urlToRemove = ((ServerGameList)listViewServerList.SelectedItem).url;
+
+            //Remove it from the serverlist.txt
+            this.serverManager.RemoveServer(urlToRemove);
+
+            //Remove it from the list
+            ServerGameList? itemToRemove = null;
+            foreach (ServerGameList sgl in this.serverList)
             {
-                this.serverManager.RemoveServer(row.Row["Url"] as string);
-                serverTable.Rows.Remove(row.Row);
+                if (sgl.url == urlToRemove)
+                {
+                    itemToRemove = sgl;
+                    break;
+                }
             }
+            if (itemToRemove != null)
+                serverList.Remove(itemToRemove.Value);
         }
 
         #endregion
