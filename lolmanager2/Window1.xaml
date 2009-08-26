@@ -26,7 +26,25 @@
                         </Grid>
                     </DockPanel>
                     <DockPanel Name="dockPanel4" Margin="0,32,0,0" VerticalAlignment="Stretch">
-                        <ListView Name="ListViewGameList" ItemsSource="{Binding}">
+                        <ListView Name="ListViewGameList" ItemsSource="{Binding}" GridViewColumnHeader.Click="OnGameListHeaderClick">
+                            <ListView.Resources>
+                                <DataTemplate x:Key="HeaderTemplateDescending">
+                                    <DockPanel>
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding}" />
+                                        <Path x:Name="arrow" StrokeThickness="1" Fill="DarkGray" Data="M 5,10 L 15,10 L 10,5" />
+                                    </DockPanel>
+                                </DataTemplate>
+                                <DataTemplate x:Key="HeaderTemplateAscending">
+                                    <DockPanel>
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding}"/>
+                                        <Path x:Name="arrow" StrokeThickness="1" Fill="DarkGray" Data="M 5,5 L 10,10 L 15,5" />
+                                    </DockPanel>
+                                </DataTemplate>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
+                                    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                </Style>
+                            </ListView.Resources>
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Width="400" Header="Name"   DisplayMemberBinding="{Binding Path=name}" />

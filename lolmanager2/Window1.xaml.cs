@@ -11,6 +11,8 @@ using System.Xml;
 using System.Threading;
 using System.Collections.ObjectModel;
 using System.Collections;
+using System.Linq;
+using System.Windows.Controls;
 
 namespace lolmanager2
 {
@@ -480,7 +482,42 @@ namespace lolmanager2
 
         private void ButtonAddToQueue_Click(object sender, RoutedEventArgs e)
         {
-            ListViewGameList.UpdateLayout();
+            MessageBox.Show("Not implemented!");
+        }
+
+        private GridViewColumn lastGameListColumnSorted;
+
+        private void OnGameListHeaderClick(object sender, RoutedEventArgs e)
+        {
+            GridViewColumn column = ((GridViewColumnHeader)e.OriginalSource).Column;
+            if (lastGameListColumnSorted != null)
+            {
+                lastGameListColumnSorted.HeaderTemplate = null;
+            }
+            SortDescriptionCollection sorts = ListViewGameList.Items.SortDescriptions;
+            RenderSort(sorts, column, GetSortDirection(sorts, column));
+        }
+
+        private ListSortDirection GetSortDirection(SortDescriptionCollection sorts, GridViewColumn column)
+        {
+            if (column == lastGameListColumnSorted && sorts[0].Direction == ListSortDirection.Ascending)
+            {
+                return ListSortDirection.Descending;
+            }
+            return ListSortDirection.Ascending;
+        }
+
+        private void RenderSort(SortDescriptionCollection sorts, GridViewColumn column, ListSortDirection direction)
+        {
+            column.HeaderTemplate = (DataTemplate)ListViewGameList.FindResource("HeaderTemplate" + direction);
+
+            System.Windows.Data.Binding columnBinding = column.DisplayMemberBinding as System.Windows.Data.Binding;
+            if (columnBinding != null)
+            {
+                sorts.Clear();
+                sorts.Add(new SortDescription(columnBinding.Path.Path, direction));
+                lastGameListColumnSorted = column;
+            }
         }
 
         #endregion
