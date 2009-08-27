@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="DownloadThread.cs" />
     <Compile Include="GameInstaller.cs" />
+    <Compile Include="GameQueueManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -23,13 +23,19 @@ namespace lolmanager2
     {
         //For managing the server list
         const string serverListFileName = "serverlist.txt";
-        private ServerManager serverManager = new ServerManager(serverListFileName);
+        ServerManager serverManager = new ServerManager(serverListFileName);
         ObservableCollection<ServerGameList> _serverList = new ObservableCollection<ServerGameList>();
         SynchronisedObservableCollection<ServerGameList> serverList;
 
         //For managing the game list
         ObservableCollection<LolGame> _gameList = new ObservableCollection<LolGame>();
         SynchronisedObservableCollection<LolGame> gameList;
+
+        //For managing the downloadQueue
+        const string gameQueueFileName = "gamequeue.txt";
+        GameQueueManager gameQueueManager = new GameQueueManager(gameQueueFileName);
+        ObservableCollection<GameQueueItem> _gameQueue = new ObservableCollection<GameQueueItem>();
+        SynchronisedObservableCollection<GameQueueItem> gameQueue;
 
         //These hold the stuff for the 'downloads' page
         DataTable downloadTable;
@@ -56,30 +62,6 @@ namespace lolmanager2
             public string status { get; set; }
         }
 
-        class LolGame
-        {
-            public Int64 size { get; set; }
-            public string sizeHumanReadable
-            {
-                get
-                {
-                    if (size < 1024)
-                        return size.ToString() + " B";
-                    else if (size < 1024 * 1024)
-                        return Math.Round((double)size / 1024, 1).ToString() + " kB";
-                    else
-                        return Math.Round((double)size / 1024 / 1024, 1).ToString() + " MB";
-                }
-            }
-            public string name { get; set; }
-
-            public string status { get; set; }
-            public string infohash { get; set; }
-            public List<string> urls;
-            public string local { get; set; }
-            public string statusInfo { get { return urls.Count.ToString() + " servers"; } }
-        }
-
         public Window1()
         {
             InitializeComponent();
@@ -99,6 +81,10 @@ namespace lolmanager2
             //Init the game list
             gameList = new SynchronisedObservableCollection<LolGame>(this._gameList);
             ListViewGameList.DataContext = this.gameList;
+
+            //Init the game queue
+            gameQueue = new SynchronisedObservableCollection<GameQueueItem>(_gameQueue);
+            ListViewGameQueue.DataContext = this.gameQueue;
 
             //Refesh the server and gamelist
             ButtonRefreshGameList_Click(null, null);
@@ -526,7 +512,28 @@ namespace lolmanager2
 
         private void ButtonAddToQueue_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Not implemented!");
+            //Get the selection
+            LolGame game = ListViewGameList.SelectedItem as LolGame;
+            if (game != null)
+            {
+                gameQueueManager.AddGame(game.infohash);
+            }
+            RefreshGameQueue();
+        }
+
+        private void RefreshGameQueue()
+        {
+            this.gameQueue.Clear();
+            foreach (LolGame game in this.gameQueueManager.GetQueue(this.gameList))
+            {
+                GameQueueItem item = new GameQueueItem();
+                item.name = game.name;
+                item.infoHash = game.infohash;
+                item.size = game.size;
+                item.progress = 0;
+                item.status = "Queued";
+                this.gameQueue.Add(item);
+            }
         }
 
         /// <summary>Hold the last column of the gamelist that was sorted</summary>

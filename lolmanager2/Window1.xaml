@@ -57,10 +57,10 @@
                         <ListView Name="ListViewGameQueue" ItemsSource="{Binding}">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Width="400" Header="Name"   DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Width="400" Header="Size"   DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Width="250" Header="Status" DisplayMemberBinding="{Binding Status}" />
-                                    <GridViewColumn Width="200" Header="Local"  DisplayMemberBinding="{Binding Local}" />
+                                    <GridViewColumn Width="200" Header="Name"   DisplayMemberBinding="{Binding Path=name}" />
+                                    <GridViewColumn Width="100" Header="Size"   DisplayMemberBinding="{Binding Path=sizeHumanReadable}" />
+                                    <GridViewColumn Width="100" Header="Status" DisplayMemberBinding="{Binding Path=status}" />
+                                    <GridViewColumn Width="200" Header="Local"  DisplayMemberBinding="{Binding Path=local}" />
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -102,7 +102,13 @@
                         </Grid>
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Stretch" Margin="0,51,0,0" VerticalAlignment="Stretch">
-                        <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6,6,6,6" Name="listViewServerList" ItemsSource="{Binding}" GridViewColumnHeader.Click="ServerListHeader_Click">
+                        <ListView
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Margin="6,6,6,6"
+                            Name="listViewServerList"
+                            ItemsSource="{Binding}"
+                            GridViewColumnHeader.Click="ServerListHeader_Click">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Width="300" Header="Server Url" DisplayMemberBinding="{Binding Path=url}" />
