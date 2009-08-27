@@ -487,6 +487,7 @@ namespace lolmanager2
 
         private GridViewColumn lastGameListColumnSorted;
 
+        /// <summary>This is for sorting the game list</summary>
         private void OnGameListHeaderClick(object sender, RoutedEventArgs e)
         {
             GridViewColumn column = ((GridViewColumnHeader)e.OriginalSource).Column;
@@ -495,10 +496,21 @@ namespace lolmanager2
                 lastGameListColumnSorted.HeaderTemplate = null;
             }
             SortDescriptionCollection sorts = ListViewGameList.Items.SortDescriptions;
-            RenderSort(sorts, column, GetSortDirection(sorts, column));
+            RenderSort(sorts, column, GetSortDirection(sorts, column, lastGameListColumnSorted), ref lastGameListColumnSorted);
         }
 
-        private ListSortDirection GetSortDirection(SortDescriptionCollection sorts, GridViewColumn column)
+        #endregion
+
+        #region Static Methods for ListView Sorting
+
+        /// <summary>
+        /// Gets the sort direction of the column of the listview
+        /// </summary>
+        /// <param name="sorts">SortDescriptions of the items of the listview</param>
+        /// <param name="column">The column that was clicked on</param>
+        /// <param name="lastGameListColumnSorted">The last column that was sorted</param>
+        /// <returns>ListSortDirection of the sort direction</returns>
+        private static ListSortDirection GetSortDirection(SortDescriptionCollection sorts, GridViewColumn column, GridViewColumn lastGameListColumnSorted)
         {
             if (column == lastGameListColumnSorted && sorts[0].Direction == ListSortDirection.Ascending)
             {
@@ -507,16 +519,23 @@ namespace lolmanager2
             return ListSortDirection.Ascending;
         }
 
-        private void RenderSort(SortDescriptionCollection sorts, GridViewColumn column, ListSortDirection direction)
+        /// <summary>
+        /// Renders the triangle next to the columns header
+        /// </summary>
+        /// <param name="sorts">The SortDescriptions of the Items of the ListView</param>
+        /// <param name="column">The column that was clicked on</param>
+        /// <param name="direction">The Sort Direction</param>
+        /// <param name="lastColumnSorted">The last column that was sorted</param>
+        private static void RenderSort(SortDescriptionCollection sorts, GridViewColumn column, ListSortDirection direction, ref GridViewColumn lastColumnSorted)
         {
-            column.HeaderTemplate = (DataTemplate)ListViewGameList.FindResource("HeaderTemplate" + direction);
+            column.HeaderTemplate = (DataTemplate)App.Current.FindResource("HeaderTemplate" + direction);
 
             System.Windows.Data.Binding columnBinding = column.DisplayMemberBinding as System.Windows.Data.Binding;
             if (columnBinding != null)
             {
                 sorts.Clear();
                 sorts.Add(new SortDescription(columnBinding.Path.Path, direction));
-                lastGameListColumnSorted = column;
+                lastColumnSorted = column;
             }
         }
 
