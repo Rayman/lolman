@@ -235,6 +235,21 @@ namespace lolmanager2
                 serverList.Remove(itemToRemove.Value);
         }
 
+        /// <summary>Hold the last column of the ServerList that was sorted</summary>
+        private GridViewColumn lastServerListColumnSorted;
+
+        /// <summary>This is for sorting the server list</summary>
+        private void OnServerListHeaderClick(object sender, RoutedEventArgs e)
+        {
+            GridViewColumn column = ((GridViewColumnHeader)e.OriginalSource).Column;
+            if (lastServerListColumnSorted != null)
+            {
+                lastServerListColumnSorted.HeaderTemplate = null;
+            }
+            SortDescriptionCollection sorts = listViewServerList.Items.SortDescriptions;
+            RenderSort(sorts, column, GetSortDirection(sorts, column, lastServerListColumnSorted), ref lastServerListColumnSorted);
+        }
+
         #endregion
         #region Downloads
 
@@ -485,6 +500,7 @@ namespace lolmanager2
             MessageBox.Show("Not implemented!");
         }
 
+        /// <summary>Hold the last column of the gamelist that was sorted</summary>
         private GridViewColumn lastGameListColumnSorted;
 
         /// <summary>This is for sorting the game list</summary>
@@ -510,9 +526,9 @@ namespace lolmanager2
         /// <param name="column">The column that was clicked on</param>
         /// <param name="lastGameListColumnSorted">The last column that was sorted</param>
         /// <returns>ListSortDirection of the sort direction</returns>
-        private static ListSortDirection GetSortDirection(SortDescriptionCollection sorts, GridViewColumn column, GridViewColumn lastGameListColumnSorted)
+        private static ListSortDirection GetSortDirection(SortDescriptionCollection sorts, GridViewColumn column, GridViewColumn lastColumnSorted)
         {
-            if (column == lastGameListColumnSorted && sorts[0].Direction == ListSortDirection.Ascending)
+            if (column != null && column == lastColumnSorted && sorts[0].Direction == ListSortDirection.Ascending)
             {
                 return ListSortDirection.Descending;
             }
@@ -528,6 +544,7 @@ namespace lolmanager2
         /// <param name="lastColumnSorted">The last column that was sorted</param>
         private static void RenderSort(SortDescriptionCollection sorts, GridViewColumn column, ListSortDirection direction, ref GridViewColumn lastColumnSorted)
         {
+            if (column == null) return;
             column.HeaderTemplate = (DataTemplate)App.Current.FindResource("HeaderTemplate" + direction);
 
             System.Windows.Data.Binding columnBinding = column.DisplayMemberBinding as System.Windows.Data.Binding;

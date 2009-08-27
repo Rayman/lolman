@@ -108,7 +108,7 @@
                         </Grid>
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Stretch" Margin="0,51,0,0" VerticalAlignment="Stretch">
-                        <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6,6,6,6" Name="listViewServerList" ItemsSource="{Binding}">
+                        <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6,6,6,6" Name="listViewServerList" ItemsSource="{Binding}" GridViewColumnHeader.Click="OnServerListHeaderClick">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Width="300" Header="Server Url" DisplayMemberBinding="{Binding Path=url}" />
