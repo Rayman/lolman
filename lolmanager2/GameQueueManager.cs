@@ -27,6 +27,7 @@ namespace lolmanager2
         }
         public string status { get; set; }
         public string local { get; set; }
+        public int priority { get; set; }
     }
 
     class LolGame
@@ -55,76 +56,74 @@ namespace lolmanager2
 
     class GameQueueManager
     {
-        string fileName;
+        const string queueFileName = "gamequeue.txt";
+        const string doneFileName = "gamefinished.txt";
 
-        internal GameQueueManager(string fileName)
+        internal GameQueueManager()
         {
-            this.fileName = fileName;
-
-            if (!File.Exists(fileName))
-                File.Create(fileName);
+            if (!File.Exists(queueFileName))
+                File.Create(queueFileName);
+            if (!File.Exists(doneFileName))
+                File.Create(doneFileName);
         }
 
-        internal void AddGame(string infoHash)
+        internal void AddToQueue(string infoHash, string localPath)
         {
-            //Check for duplicates
-            foreach (string s in this.GetQueue())
-                if (s == infoHash)
+            if (!Directory.Exists(localPath))
+                throw new Exception("Directory doesn't exists");
+            localPath = (new DirectoryInfo(localPath + Path.DirectorySeparatorChar)).FullName;
+
+            foreach (string line in File.ReadAllText(queueFileName).Split('\0'))
+            {
+                if (line.Length == 0)
+                    continue;
+                string hash = line.Substring(0, line.IndexOf('\t'));
+                string localName = line.Substring(hash.Length, line.Length - hash.Length);
+
+                //Duplicate
+                if (hash == infoHash)
                     return;
-
-            //Append to the list
-            File.AppendAllText(this.fileName, infoHash + '\n');
-        }
-
-        internal string[] GetQueue()
-        {
-            List<string> games = new List<string>();
-            bool duplicates = false;
-
-            foreach (string s in File.ReadAllLines(this.fileName))
-            {
-                if (games.Contains(s))
-                    duplicates = true;
-                else
-                    games.Add(s);
             }
 
-            if (duplicates)
-                File.WriteAllLines(this.fileName, games.ToArray());
-
-            return games.ToArray();
-        }
-
-        internal void RemoveGame(string hash)
-        {
-            List<string> servers = new List<string>();
-            foreach (string s in File.ReadAllLines(this.fileName))
-            {
-                if (!servers.Contains(s))
-                    if (hash != s)
-                        servers.Add(s);
-            }
-
-            File.WriteAllLines(this.fileName, servers.ToArray());
+            //No duplicates, add it
+            File.AppendAllText(queueFileName, infoHash + '\t' + localPath + '\0');
         }
 
         internal IEnumerable<LolGame> GetQueue(IEnumerable<LolGame> gameList)
         {
-            foreach (string infoHash in this.GetQueue())
+            return GetGames(gameList, queueFileName);
+        }
+
+        internal IEnumerable<LolGame> GetDone(IEnumerable<LolGame> gameList)
+        {
+            return GetGames(gameList, doneFileName);
+        }
+
+        private IEnumerable<LolGame> GetGames(IEnumerable<LolGame> gameList, string fileName)
+        {
+            foreach (string line in File.ReadAllText(fileName).Split('\0'))
             {
+                if (line.Length == 0)
+                    continue;
+                string hash = line.Substring(0, line.IndexOf('\t'));
+                string localName = line.Remove(0, line.IndexOf('\t'));
+
                 //Search for infohash
-                IEnumerable<LolGame> game = from s in gameList
-                                            where s.infohash == infoHash
-                                            select s;
-                if (game.Count<LolGame>() != 1)
+                IEnumerable<LolGame> selection = from s in gameList
+                                                 where s.infohash == hash
+                                                 select s;
+                if (selection.Count<LolGame>() != 1)
                 {
                     LolGame item = new LolGame();
-                    item.name = "Error, multiple selections";
+                    item.name = "Error, no or multiple games";
+                    item.status = "Error";
                     yield return item;
                 }
                 else
                 {
-                    yield return game.First<LolGame>();
+                    LolGame game = selection.First<LolGame>();
+                    game.local = localName;
+                    yield return game;
                 }
             }
         }

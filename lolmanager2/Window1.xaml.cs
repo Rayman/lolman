@@ -32,8 +32,7 @@ namespace lolmanager2
         SynchronisedObservableCollection<LolGame> gameList;
 
         //For managing the downloadQueue
-        const string gameQueueFileName = "gamequeue.txt";
-        GameQueueManager gameQueueManager = new GameQueueManager(gameQueueFileName);
+        GameQueueManager gameQueueManager = new GameQueueManager();
         ObservableCollection<GameQueueItem> _gameQueue = new ObservableCollection<GameQueueItem>();
         SynchronisedObservableCollection<GameQueueItem> gameQueue;
 
@@ -400,7 +399,6 @@ namespace lolmanager2
         /// </summary>
         void DownloadAllGameInfo(object sender, DoWorkEventArgs e)
         {
-
             WebClient client = new WebClient();
 
             foreach (ServerGameList server in this.serverList)
@@ -494,6 +492,9 @@ namespace lolmanager2
                         this.gameList.Add(game);
                 }
             }
+
+            //When tha gamelist is refreshed, the queue refresh is easy!
+            RefreshGameQueue();
         }
 
         /// <summary>
@@ -510,32 +511,6 @@ namespace lolmanager2
                     ParseXMLRecursive(child, ref size);
         }
 
-        private void ButtonAddToQueue_Click(object sender, RoutedEventArgs e)
-        {
-            //Get the selection
-            LolGame game = ListViewGameList.SelectedItem as LolGame;
-            if (game != null)
-            {
-                gameQueueManager.AddGame(game.infohash);
-            }
-            RefreshGameQueue();
-        }
-
-        private void RefreshGameQueue()
-        {
-            this.gameQueue.Clear();
-            foreach (LolGame game in this.gameQueueManager.GetQueue(this.gameList))
-            {
-                GameQueueItem item = new GameQueueItem();
-                item.name = game.name;
-                item.infoHash = game.infohash;
-                item.size = game.size;
-                item.progress = 0;
-                item.status = "Queued";
-                this.gameQueue.Add(item);
-            }
-        }
-
         /// <summary>Hold the last column of the gamelist that was sorted</summary>
         private GridViewColumn lastGameListColumnSorted;
 
@@ -549,6 +524,49 @@ namespace lolmanager2
             }
             SortDescriptionCollection sorts = ListViewGameList.Items.SortDescriptions;
             RenderSort(sorts, column, GetSortDirection(sorts, column, lastGameListColumnSorted), ref lastGameListColumnSorted);
+        }
+
+        #endregion
+        #region GameQueue
+
+        private void ButtonAddToQueue_Click(object sender, RoutedEventArgs e)
+        {
+            //Get the selection
+            LolGame game = ListViewGameList.SelectedItem as LolGame;
+            if (game != null)
+            {
+                System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+                dialog.Description = "Select a folder where to install " + game.name;
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    this.gameQueueManager.AddToQueue(game.infohash, dialog.SelectedPath);
+                }
+            }
+            RefreshGameQueue();
+        }
+
+        private void RefreshGameQueue()
+        {
+            this.gameQueue.Clear();
+            int count = 1;
+            foreach (LolGame game in this.gameQueueManager.GetQueue(this.gameList))
+            {
+                GameQueueItem item = new GameQueueItem();
+                item.name = game.name;
+                item.infoHash = game.infohash;
+                item.size = game.size;
+                item.progress = 0;
+                item.status = "Queued";
+                item.local = game.local;
+                item.priority = count++;
+                this.gameQueue.Add(item);
+            }
+        }
+
+        private void buttonRefreshGameQueue_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshGameQueue();
         }
 
         #endregion
