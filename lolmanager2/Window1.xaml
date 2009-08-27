@@ -6,7 +6,7 @@
         <TabControl Name="tabControl1" Margin="0,0,0,23">
             <TabItem Header="Main" Name="tabItem1">
                 <Grid>
-                    <Button Height="23" HorizontalAlignment="Left" Margin="140,128,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="buttonAddDownload">Start</Button>
+                    <Button Height="23" HorizontalAlignment="Left" Margin="140,128,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="buttonAddDownload_Click">Start</Button>
                     <TextBox Height="23" Margin="140,70,402,0" Name="textBoxFrom" VerticalAlignment="Top">http://localhost/AOE2/lol.info.xml</TextBox>
                     <TextBox Height="23" Margin="140,99,402,0" Name="textBoxTo" VerticalAlignment="Top">d:\temp\test</TextBox>
                 </Grid>
@@ -102,7 +102,7 @@
                         </Grid>
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Stretch" Margin="0,51,0,0" VerticalAlignment="Stretch">
-                        <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6,6,6,6" Name="listViewServerList" ItemsSource="{Binding}" GridViewColumnHeader.Click="OnServerListHeaderClick">
+                        <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6,6,6,6" Name="listViewServerList" ItemsSource="{Binding}" GridViewColumnHeader.Click="ServerListHeader_Click">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Width="300" Header="Server Url" DisplayMemberBinding="{Binding Path=url}" />

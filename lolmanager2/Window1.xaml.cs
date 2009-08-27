@@ -106,11 +106,16 @@ namespace lolmanager2
 
         #region Server List
 
+        /// <summary>Refreshes the ServerList</summary>
         void RefreshServers()
         {
             RefreshServers(null);
         }
 
+        /// <summary>
+        /// Refreshes the ServerList, when it is finished, executes the whenDone delegate
+        /// </summary>
+        /// <param name="whenDone">Delegate to excecute when serverlist is refreshed</param>
         void RefreshServers(RunWorkerCompletedEventHandler whenDone)
         {
             if (bgWorker.IsBusy)
@@ -144,6 +149,9 @@ namespace lolmanager2
             textBoxLog.Text += "\nStarted refreshing server list...";
         }
 
+        /// <summary>
+        /// The background task to refresh all the servers
+        /// </summary>
         void RefreshServerList(object sender, DoWorkEventArgs e)
         {
             WebClient client = new WebClient();
@@ -241,7 +249,7 @@ namespace lolmanager2
         private GridViewColumn lastServerListColumnSorted;
 
         /// <summary>This is for sorting the server list</summary>
-        private void OnServerListHeaderClick(object sender, RoutedEventArgs e)
+        private void ServerListHeader_Click(object sender, RoutedEventArgs e)
         {
             GridViewColumn column = ((GridViewColumnHeader)e.OriginalSource).Column;
             if (lastServerListColumnSorted != null)
@@ -255,7 +263,7 @@ namespace lolmanager2
         #endregion
         #region Downloads
 
-        private void buttonAddDownload(object sender, RoutedEventArgs e)
+        private void buttonAddDownload_Click(object sender, RoutedEventArgs e)
         {
             //Empy the download table
             downloadTable.Clear();
@@ -276,6 +284,7 @@ namespace lolmanager2
             this.bgWorker.RunWorkerAsync();
         }
 
+        /// <summary>The background task to download a game</summary>
         void GameDownloadStart(object sender, DoWorkEventArgs e)
         {
 #if (!debug)
@@ -295,6 +304,12 @@ namespace lolmanager2
             MessageBox.Show("Download completed!");
         }
 
+        /// <summary>
+        /// Delegate for when the download progress of a game changes,
+        /// It updates the GUI of the downloadTable
+        /// </summary>
+        /// <param name="sender">Not used</param>
+        /// <param name="e">e.UserState contains all info on what changed</param>
         void GameDownloadProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             InstallChangedEventArgs drp = (InstallChangedEventArgs)e.UserState;
@@ -383,6 +398,10 @@ namespace lolmanager2
             RefreshServers(new RunWorkerCompletedEventHandler(ServerRefreshCompleted));
         }
 
+        /// <summary>
+        /// The delegate for when refreshing the serverlist is completed
+        /// It refreshes the gameList
+        /// </summary>
         void ServerRefreshCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             bgWorker = new BackgroundWorker();
@@ -390,6 +409,9 @@ namespace lolmanager2
             bgWorker.RunWorkerAsync();
         }
 
+        /// <summary>
+        /// The background task for reloading the gamelist
+        /// </summary>
         void DownloadAllGameInfo(object sender, DoWorkEventArgs e)
         {
 
@@ -488,6 +510,11 @@ namespace lolmanager2
             }
         }
 
+        /// <summary>
+        /// Parses recursively all childnodes of 'node' and adds the filesize to size
+        /// </summary>
+        /// <param name="node">The XmlNode to parse</param>
+        /// <param name="size">The current size to add all file sizes</param>
         private void ParseXMLRecursive(XmlNode node, ref Int64 size)
         {
             if (node.Name == "file")
