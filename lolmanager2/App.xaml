@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     StartupUri="Window1.xaml">
     <Application.Resources>
+        <!-- The HeaderTemplates for sorting, it displays an triangle !!! -->
         <DataTemplate x:Key="HeaderTemplateDescending">
             <DockPanel>
                 <TextBlock HorizontalAlignment="Center" Text="{Binding}" />
@@ -15,5 +16,11 @@
                 <Path x:Name="arrow" StrokeThickness="1" Fill="DarkGray" Data="M 5,5 L 10,10 L 15,5" />
             </DockPanel>
         </DataTemplate>
+
+        <!-- The Style of the listboxes -->
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
     </Application.Resources>
 </Application>

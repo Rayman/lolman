@@ -27,12 +27,6 @@
                     </DockPanel>
                     <DockPanel Name="dockPanel4" Margin="0,32,0,0" VerticalAlignment="Stretch">
                         <ListView Name="ListViewGameList" ItemsSource="{Binding}" GridViewColumnHeader.Click="OnGameListHeaderClick">
-                            <ListView.Resources>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-                                </Style>
-                            </ListView.Resources>
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Width="400" Header="Name"   DisplayMemberBinding="{Binding Path=name}" />
