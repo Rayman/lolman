@@ -96,10 +96,12 @@ namespace lolmanager2
             serverList = new SynchronisedObservableCollection<ServerGameList>(this._serverList);
             listViewServerList.DataContext = serverList;
 
+            //Init the game list
             gameList = new SynchronisedObservableCollection<LolGame>(this._gameList);
             ListViewGameList.DataContext = this.gameList;
 
-            RefreshServers();
+            //Refesh the server and gamelist
+            ButtonRefreshGameList_Click(null, null);
         }
 
         #region Server List
@@ -516,7 +518,6 @@ namespace lolmanager2
         }
 
         #endregion
-
         #region Static Methods for ListView Sorting
 
         /// <summary>
