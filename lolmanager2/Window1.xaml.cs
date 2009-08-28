@@ -610,5 +610,15 @@ namespace lolmanager2
         }
 
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.ListViewGameQueue.SelectedItem != null)
+            {
+                var item = (GameQueueItem)this.ListViewGameQueue.SelectedItem;
+                this.gameQueueManager.MoveUp(item.infoHash);
+                RefreshGameQueue();
+            }
+        }
     }
 }

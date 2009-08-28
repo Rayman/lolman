@@ -106,7 +106,7 @@ namespace lolmanager2
                 if (line.Length == 0)
                     continue;
                 string hash = line.Substring(0, line.IndexOf('\t'));
-                string localName = line.Remove(0, line.IndexOf('\t'));
+                string localName = line.Remove(0, line.IndexOf('\t') + 1);
 
                 //Search for infohash
                 IEnumerable<LolGame> selection = from s in gameList
@@ -126,6 +126,34 @@ namespace lolmanager2
                     yield return game;
                 }
             }
+        }
+
+        internal void MoveUp(string infoHash)
+        {
+            string[] lines = File.ReadAllText(queueFileName).Split('\0');
+            string previous = null;
+            TextWriter tw = new StreamWriter(queueFileName);
+
+            foreach (string line in lines)
+            {
+                if (line.Length == 0)
+                    continue;
+                string hash = line.Substring(0, line.IndexOf('\t'));
+                string localName = line.Remove(0, line.IndexOf('\t') + 1);
+
+                if (hash == infoHash)
+                    tw.Write(hash + '\t' + localName + '\0');
+                else
+                {
+                    if (previous != null)
+                        tw.Write(previous);
+                    previous = hash + '\t' + localName + '\0';
+                }
+            }
+
+            if (previous != null)
+                tw.Write(previous);
+            tw.Close();
         }
     }
 }
