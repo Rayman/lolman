@@ -186,7 +186,6 @@ namespace lolmanager2
                     return;
             }
             File.AppendAllText(doneFileName, infoHash + '\t' + local + '\0');
-            this.RemoveFromQueue(infoHash);
         }
     }
 }

@@ -620,7 +620,11 @@ namespace lolmanager2
         void backgroundDownloaderDone(object sender, RunWorkerCompletedEventArgs e)
         {
             this.gameQueueManager.AddToFinished(gameInstaller.game.infohash, gameInstaller.game.local);
+            this.gameQueueManager.RemoveFromQueue(gameInstaller.game.infohash);
+
             this.RefreshGameQueue();
+            if (this.downloadStatus)
+                this.backgroundDownloader.RunWorkerAsync();
         }
 
         private void buttonQueueStart_Click(object sender, RoutedEventArgs e)
