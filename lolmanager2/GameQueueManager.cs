@@ -156,7 +156,7 @@ namespace lolmanager2
             tw.Close();
         }
 
-        internal void Remove(string infoHash)
+        internal void RemoveFromQueue(string infoHash)
         {
             string[] lines = File.ReadAllText(queueFileName).Split('\0');
             TextWriter tw = new StreamWriter(queueFileName);
@@ -172,6 +172,21 @@ namespace lolmanager2
             }
 
             tw.Close();
+        }
+
+        internal void AddToFinished(string infoHash, string local)
+        {
+            //Check if already added
+            foreach (string line in File.ReadAllText(doneFileName).Split('\0'))
+            {
+                if (line.Length == 0)
+                    continue;
+                string hash = line.Substring(0, line.IndexOf('\t'));
+                if (hash == infoHash)
+                    return;
+            }
+            File.AppendAllText(doneFileName, infoHash + '\t' + local + '\0');
+            this.RemoveFromQueue(infoHash);
         }
     }
 }

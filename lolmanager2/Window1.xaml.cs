@@ -549,7 +549,7 @@ namespace lolmanager2
             if (this.ListViewGameQueue.SelectedItem != null)
             {
                 var item = (GameQueueItem)this.ListViewGameQueue.SelectedItem;
-                this.gameQueueManager.Remove(item.infoHash);
+                this.gameQueueManager.RemoveFromQueue(item.infoHash);
                 RefreshGameQueue();
             }
         }
@@ -619,7 +619,8 @@ namespace lolmanager2
 
         void backgroundDownloaderDone(object sender, RunWorkerCompletedEventArgs e)
         {
-            MessageBox.Show("Download Done!");
+            this.gameQueueManager.AddToFinished(gameInstaller.game.infohash, gameInstaller.game.local);
+            this.RefreshGameQueue();
         }
 
         private void buttonQueueStart_Click(object sender, RoutedEventArgs e)

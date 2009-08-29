@@ -65,7 +65,7 @@ namespace lolmanager2
         const Int64 maxSimulSize = 16777216; //16 mb
 
         //The game to download
-        LolGame game;
+        internal LolGame game;
 
         //The remote directory where all files are stored in
         List<string> baseUrls = new List<string>();
