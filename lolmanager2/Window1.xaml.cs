@@ -44,6 +44,10 @@ namespace lolmanager2
         //such as reloading the servers list or downloading a game
         BackgroundWorker bgWorker = new BackgroundWorker();
 
+        //This is for the automatic downloading in the background
+        bool downloadStatus = false; //False==pause, True==started
+        BackgroundWorker backgroundDownloader = new BackgroundWorker();
+
         //This is for determining transfer speed
         Queue<FileSpeedInfo> lastFilesSpeed = new Queue<FileSpeedInfo>();
         const int fileSpeedQueueLength = 8000; //miliseconds
@@ -83,6 +87,13 @@ namespace lolmanager2
 
             //Init the game queue
             gameQueue = new SynchronisedObservableCollection<GameQueueItem>(_gameQueue);
+
+            //Init the background downloader
+            backgroundDownloader.WorkerReportsProgress = true;
+            backgroundDownloader.DoWork += new DoWorkEventHandler(backgroundDownloaderStart);
+            backgroundDownloader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundDownloaderDone);
+            backgroundDownloader.ProgressChanged += new ProgressChangedEventHandler(GameDownloadProgressChanged);
+
             ListViewGameQueue.DataContext = this.gameQueue;
 
             //Refesh the server and gamelist
@@ -247,47 +258,6 @@ namespace lolmanager2
 
         #endregion
         #region Downloads
-
-        private void buttonAddDownload_Click(object sender, RoutedEventArgs e)
-        {
-            //Empy the download table
-            downloadTable.Clear();
-            try
-            {
-                gameInstaller = new GameInstaller(textBoxFrom.Text, textBoxTo.Text);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return;
-            }
-            this.bgWorker = new BackgroundWorker();
-            this.bgWorker.WorkerReportsProgress = true;
-            this.bgWorker.DoWork += new DoWorkEventHandler(GameDownloadStart);
-            this.bgWorker.ProgressChanged += new ProgressChangedEventHandler(GameDownloadProgressChanged);
-            this.bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(GameDownloadCompleted);
-            this.bgWorker.RunWorkerAsync();
-        }
-
-        /// <summary>The background task to download a game</summary>
-        void GameDownloadStart(object sender, DoWorkEventArgs e)
-        {
-#if (!debug)
-            try{
-#endif
-            gameInstaller.parent = (BackgroundWorker)sender;
-            gameInstaller.ParseXML();
-            gameInstaller.FastScanMissing();
-            gameInstaller.DownloadToDo();
-#if (!debug)
-            }catch (Exception ex) { MessageBox.Show(ex.Message); }
-#endif
-        }
-
-        void GameDownloadCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            MessageBox.Show("Download completed!");
-        }
 
         /// <summary>
         /// Delegate for when the download progress of a game changes,
@@ -621,6 +591,52 @@ namespace lolmanager2
                 sorts.Clear();
                 sorts.Add(new SortDescription(columnBinding.Path.Path, direction));
                 lastColumnSorted = column;
+            }
+        }
+
+        #endregion
+        #region AutoDownloading
+
+        void backgroundDownloaderStart(object sender, DoWorkEventArgs e)
+        {
+            IEnumerable<LolGame> queue = this.gameQueueManager.GetQueue(this.gameList);
+            if (queue.Count<LolGame>() == 0)
+                return;
+            LolGame toDo = queue.First<LolGame>();
+#if (!debug)
+            try{
+#endif
+            gameInstaller = new GameInstaller(toDo);
+            gameInstaller.parent = (BackgroundWorker)sender;
+            gameInstaller.ParseXML();
+            gameInstaller.FastScanMissing();
+            gameInstaller.DownloadToDo();
+#if (!debug)
+            }catch (Exception ex) { MessageBox.Show(ex.Message); }
+#endif
+
+        }
+
+        void backgroundDownloaderDone(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show("Download Done!");
+        }
+
+        private void buttonQueueStart_Click(object sender, RoutedEventArgs e)
+        {
+            if (!backgroundDownloader.IsBusy && this.downloadStatus == false)
+            {
+                this.downloadStatus = true;
+                backgroundDownloader.RunWorkerAsync();
+            }
+        }
+
+        private void buttonQueuePause_Click(object sender, RoutedEventArgs e)
+        {
+            if (backgroundDownloader.IsBusy && this.downloadStatus == true)
+            {
+                this.downloadStatus = false;
+                backgroundDownloader.CancelAsync();
             }
         }
 

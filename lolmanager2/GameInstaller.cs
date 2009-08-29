@@ -12,7 +12,7 @@ namespace lolmanager2
 {
     struct ToDoFile
     {
-        internal string remoteUrl;
+        internal string path;
         internal string localUrl;
         internal Int64 length;
         internal string sha1sum;
@@ -64,12 +64,12 @@ namespace lolmanager2
         const int maxSimulDownloads = 3;
         const Int64 maxSimulSize = 16777216; //16 mb
 
-        //Url of the xml file on the remote
-        string remote;
-        //Url of the local directory to store the game
-        string local;
+        //The game to download
+        LolGame game;
+
         //The remote directory where all files are stored in
-        string baseUrl;
+        List<string> baseUrls = new List<string>();
+        int mirrorWalker = 0;
 
         //All files that have to be downloaded
         List<ToDoFile> toDoFiles;
@@ -79,24 +79,30 @@ namespace lolmanager2
 
         bool downloadDone;
 
-        internal GameInstaller(string from, string to)
+        internal GameInstaller(LolGame game)
         {
-            if (to == string.Empty)
-                throw new Exception("No empty dir plx");
-
-            if (!Directory.Exists(to))
+            if (!Directory.Exists(game.local))
             {
                 MessageBoxResult result = MessageBox.Show(
-                    string.Format("The folder {0} doesn't exists. Do you want to create it?", to),
-                    "Error", MessageBoxButton.OKCancel);
+                    string.Format(
+                        "The folder {0} doesn't exists. Do you want to create it?",
+                        game.local
+                    ),
+                    "Error", MessageBoxButton.OKCancel
+                );
                 if (result == MessageBoxResult.Cancel)
                     throw new Exception("Stopped downloading, dir doesn't exist"); ;
-                Directory.CreateDirectory(to);
+                Directory.CreateDirectory(game.local);
             }
 
-            this.remote = from;
-            this.local = (new DirectoryInfo(to + "/")).FullName;
-            this.baseUrl = from.Substring(0, from.LastIndexOf('/') + 1);
+            this.game = game;
+            foreach (string url in game.urls)
+            {
+                this.baseUrls.Add(url.Substring(0, url.LastIndexOf('/') + 1));
+            }
+
+            //Error check
+            this.game.local = (new FileInfo(this.game.local + Path.DirectorySeparatorChar)).FullName;
         }
 
         internal void ParseXML()
@@ -104,7 +110,7 @@ namespace lolmanager2
             //log
             this.parent.ReportProgress(0, new InstallChangedEventArgs(InstallChangedEventType.log, "Start downloading XML..."));
             WebClient webClient = new WebClient();
-            string xmlinfo = webClient.DownloadString(remote);
+            string xmlinfo = webClient.DownloadString(game.urls[0]);
             //log
             this.parent.ReportProgress(0, new InstallChangedEventArgs(InstallChangedEventType.log, "Downloading XML done!"));
             this.parent.ReportProgress(0, new InstallChangedEventArgs(InstallChangedEventType.log, "Start parsing XML..."));
@@ -147,13 +153,13 @@ namespace lolmanager2
             if (node.Name == "file")
             {
                 string fileName = Encoding.UTF8.GetString(Encoding.Default.GetBytes(node.Attributes["name"].Value));
-                string remoteName = this.baseUrl + directory + fileName;
-                string localName = local.ToString() + directory + fileName;
+                string path = directory + fileName;
+                string localName = this.game.local + directory + fileName;
                 Int64 length = Int64.Parse(node.Attributes["length"].Value);
 
                 ToDoFile file = new ToDoFile();
                 file.localUrl = localName;
-                file.remoteUrl = remoteName;
+                file.path = path;
                 file.length = length;
                 if (node.HasChildNodes)
                 {
@@ -178,7 +184,7 @@ namespace lolmanager2
             if (node.Name == "folder")
             {
                 string dirName = Encoding.UTF8.GetString(Encoding.Default.GetBytes(node.Attributes["name"].Value));
-                Directory.CreateDirectory(local.ToString() + directory + dirName);
+                Directory.CreateDirectory(this.game.local + directory + dirName);
 
                 foreach (XmlNode child in node.ChildNodes)
                 {
@@ -274,7 +280,11 @@ namespace lolmanager2
                     e.Result = th;
                     return;
                 }
-                th.remoteUrl = this.toDoFiles[0].remoteUrl;
+
+                //Get a random mirror
+                this.mirrorWalker = ++this.mirrorWalker % this.baseUrls.Count;
+                th.remoteUrl = this.baseUrls[this.mirrorWalker] + this.toDoFiles[0].path;
+
                 th.localUrl = this.toDoFiles[0].localUrl;
                 th.filesize = this.toDoFiles[0].length;
                 th.sha1sum = this.toDoFiles[0].sha1sum;
