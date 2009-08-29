@@ -564,11 +564,6 @@ namespace lolmanager2
             }
         }
 
-        private void buttonRefreshGameQueue_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshGameQueue();
-        }
-
         #endregion
         #region Static Methods for ListView Sorting
 
