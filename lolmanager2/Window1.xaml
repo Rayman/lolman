@@ -45,12 +45,16 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="100" />
-                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="80" />
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0">Game Queue:</Label>
-                            <Button Grid.Column="1" Margin="0,0,3,0">Remove</Button>
-                            <Button Grid.Column="2" Margin="3,0,0,0" Click="Button_Click">Up</Button>
+                            <Button Grid.Column="1" Margin="0,0,3,0" Name="buttonQueueStart">Start</Button>
+                            <Button Grid.Column="2" Margin="3,0,3,0" Name="buttonQueuePause">Pause</Button>
+                            <Button Grid.Column="3" Margin="3,0,3,0" Name="buttonQueueRemove" Click="buttonQueueRemove_Click">Remove</Button>
+                            <Button Grid.Column="4" Margin="3,0,0,0" Click="buttonQueueMoveUp_Click" Name="buttonQueueMoveUp">Up</Button>
                         </Grid>
                     </DockPanel>
                     <DockPanel Margin="0,32,0,0" VerticalAlignment="Stretch">

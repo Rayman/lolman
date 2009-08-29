@@ -155,5 +155,23 @@ namespace lolmanager2
                 tw.Write(previous);
             tw.Close();
         }
+
+        internal void Remove(string infoHash)
+        {
+            string[] lines = File.ReadAllText(queueFileName).Split('\0');
+            TextWriter tw = new StreamWriter(queueFileName);
+
+            foreach (string line in lines)
+            {
+                if (line.Length == 0)
+                    continue;
+                string hash = line.Substring(0, line.IndexOf('\t'));
+                if (hash != infoHash)
+                    tw.Write(line + '\0');
+
+            }
+
+            tw.Close();
+        }
     }
 }
