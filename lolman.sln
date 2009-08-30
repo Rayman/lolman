@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C# Express 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lolmanager2", "lolmanager2\lolmanager2.csproj", "{59F0CBE2-E0DD-4D83-900D-FD455380C8ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lolman", "lolman\lolman.csproj", "{59F0CBE2-E0DD-4D83-900D-FD455380C8ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
