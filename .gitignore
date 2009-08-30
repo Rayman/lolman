@@ -5,3 +5,5 @@ lolman/obj
 _ReSharper.*
 *.sln.cache
 *.patch
+updateserverinfo/bin
+updateserverinfo/obj
