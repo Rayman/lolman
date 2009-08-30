@@ -8,7 +8,7 @@
     <ProjectGuid>{C8930F80-3DDC-4A35-8FB3-33CE03117790}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>updateserverinfo</RootNamespace>
+    <RootNamespace>LanOfLegends.updateserverinfo</RootNamespace>
     <AssemblyName>updateserverinfo</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
