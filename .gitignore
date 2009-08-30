@@ -1,9 +1,12 @@
 lolman/bin
 lolman/obj
+updateserverinfo/bin
+updateserverinfo/obj
+lolgen/bin
+lolgen/obj
+
 *.user
 *.suo
 _ReSharper.*
 *.sln.cache
 *.patch
-updateserverinfo/bin
-updateserverinfo/obj
