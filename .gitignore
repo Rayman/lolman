@@ -4,3 +4,4 @@ lolman/obj
 *.suo
 _ReSharper.*
 *.sln.cache
+*.patch
