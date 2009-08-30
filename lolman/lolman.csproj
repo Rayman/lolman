@@ -8,7 +8,7 @@
     <ProjectGuid>{59F0CBE2-E0DD-4D83-900D-FD455380C8ED}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>lolmanager2</RootNamespace>
+    <RootNamespace>LanOfLegends.lolman</RootNamespace>
     <AssemblyName>lolmanager2</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

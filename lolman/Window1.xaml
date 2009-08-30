@@ -1,4 +1,4 @@
-﻿<Window x:Class="lolmanager2.Window1"
+﻿<Window x:Class="LanOfLegends.lolman.Window1"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="lanman - Lan of Legends (Game) Manager" Height="463" Width="904">

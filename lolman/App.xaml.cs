@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 
-namespace lolmanager2
+namespace LanOfLegends.lolman
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Collections;
 
-namespace lolmanager2
+namespace LanOfLegends.lolman
 {
     struct GameQueueItem
     {

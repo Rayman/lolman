@@ -8,7 +8,7 @@ using System.Threading;
 using System.Windows;
 using System.Xml;
 
-namespace lolmanager2
+namespace LanOfLegends.lolman
 {
     struct ToDoFile
     {

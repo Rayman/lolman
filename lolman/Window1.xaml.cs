@@ -14,7 +14,7 @@ using System.Collections;
 using System.Linq;
 using System.Windows.Controls;
 
-namespace lolmanager2
+namespace LanOfLegends.lolman
 {
     /// <summary>
     /// Interaction logic for Window1.xaml

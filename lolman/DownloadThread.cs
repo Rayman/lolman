@@ -6,7 +6,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
 
-namespace lolmanager2
+namespace LanOfLegends.lolman
 {
     class DownloadThread
     {
