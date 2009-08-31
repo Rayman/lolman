@@ -33,63 +33,103 @@
             this.labelStatus = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.buttonStart = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.buttonGetIcon = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            //
+            // 
             // buttonSelectFolder
-            //
-            this.buttonSelectFolder.Location = new System.Drawing.Point(13, 13);
+            // 
+            this.buttonSelectFolder.Location = new System.Drawing.Point(458, 10);
             this.buttonSelectFolder.Name = "buttonSelectFolder";
             this.buttonSelectFolder.Size = new System.Drawing.Size(93, 23);
             this.buttonSelectFolder.TabIndex = 0;
             this.buttonSelectFolder.Text = "Select Folder";
             this.buttonSelectFolder.UseVisualStyleBackColor = true;
             this.buttonSelectFolder.Click += new System.EventHandler(this.buttonSelectFolder_Click);
-            //
+            // 
             // textBoxFolder
-            //
-            this.textBoxFolder.Location = new System.Drawing.Point(113, 13);
+            // 
+            this.textBoxFolder.Location = new System.Drawing.Point(102, 13);
             this.textBoxFolder.Name = "textBoxFolder";
-            this.textBoxFolder.Size = new System.Drawing.Size(371, 20);
+            this.textBoxFolder.Size = new System.Drawing.Size(350, 20);
             this.textBoxFolder.TabIndex = 1;
-            //
+            // 
             // labelStatus
-            //
+            // 
             this.labelStatus.AutoSize = true;
-            this.labelStatus.Location = new System.Drawing.Point(13, 43);
+            this.labelStatus.Location = new System.Drawing.Point(99, 92);
             this.labelStatus.Name = "labelStatus";
-            this.labelStatus.Size = new System.Drawing.Size(35, 13);
+            this.labelStatus.Size = new System.Drawing.Size(139, 13);
             this.labelStatus.TabIndex = 2;
-            this.labelStatus.Text = "label1";
-            //
+            this.labelStatus.Text = "Press Start to start scanning";
+            // 
             // progressBar1
-            //
-            this.progressBar1.Location = new System.Drawing.Point(16, 60);
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(102, 66);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(535, 23);
+            this.progressBar1.Size = new System.Drawing.Size(350, 23);
             this.progressBar1.TabIndex = 3;
-            //
+            // 
             // buttonStart
-            //
-            this.buttonStart.Location = new System.Drawing.Point(490, 13);
+            // 
+            this.buttonStart.Location = new System.Drawing.Point(458, 68);
             this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(61, 23);
+            this.buttonStart.Size = new System.Drawing.Size(93, 23);
             this.buttonStart.TabIndex = 4;
             this.buttonStart.Text = "Start";
             this.buttonStart.UseVisualStyleBackColor = true;
             this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
-            //
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 43);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(67, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Game name:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(102, 40);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(350, 20);
+            this.textBox1.TabIndex = 6;
+            // 
+            // buttonGetIcon
+            // 
+            this.buttonGetIcon.Location = new System.Drawing.Point(458, 39);
+            this.buttonGetIcon.Name = "buttonGetIcon";
+            this.buttonGetIcon.Size = new System.Drawing.Size(93, 23);
+            this.buttonGetIcon.TabIndex = 7;
+            this.buttonGetIcon.Text = "Get Icon";
+            this.buttonGetIcon.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(13, 15);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(83, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Game Directory:";
+            // 
             // Form1
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(563, 188);
+            this.ClientSize = new System.Drawing.Size(563, 119);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.buttonGetIcon);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.textBoxFolder);
             this.Controls.Add(this.buttonSelectFolder);
-            this.MaximumSize = new System.Drawing.Size(579, 224);
-            this.MinimumSize = new System.Drawing.Size(579, 224);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
@@ -104,6 +144,10 @@
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button buttonStart;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button buttonGetIcon;
+        private System.Windows.Forms.Label label2;
     }
 }
 
