@@ -5,6 +5,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace LanOfLegends.lolgen2
 {
@@ -21,7 +23,22 @@ namespace LanOfLegends.lolgen2
         string name; //The name of the game
         List<string> gameHash = new List<string>();
 
+        Icon ico = null;
+
         public DirectorySummer(string dir, string name)
+        {
+            this.name = name;
+            InitSummer(dir);
+        }
+
+        public DirectorySummer(string dir, string name, Icon ico)
+        {
+            this.name = name;
+            this.ico = ico;
+            InitSummer(dir);
+        }
+
+        public void InitSummer(string dir)
         {
             if (!Directory.Exists(dir))
             {
@@ -33,7 +50,6 @@ namespace LanOfLegends.lolgen2
                 this.message = "Getting size...";
                 this.size = getDirectorySize(this.info);
                 this.message += string.Format(" {0} bytes", this.size);
-                this.name = name;
             }
 
             this.DoWork += new DoWorkEventHandler(Start);
@@ -46,6 +62,26 @@ namespace LanOfLegends.lolgen2
             infoxml.Append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
             infoxml.Append("<install type=\"game\" version=\"1.1\">\n");
             infoxml.Append("\t<name>" + this.name + "</name>\n");
+
+            //Icon as string
+            MemoryStream ms = new MemoryStream();
+            ico.Save(ms);
+
+            //Compress if smaller
+            byte[] icon = ms.ToArray();
+            ms.Close();
+            byte[] iconCompressed = GzipUtils.Compress(icon);
+            if (icon.Length < iconCompressed.Length)
+            {
+                string base64Icon = Convert.ToBase64String(GzipUtils.Compress(icon));
+                infoxml.Append("\t<icon>" + base64Icon + "</icon>\n");
+            }
+            else
+            {
+                string base64Icon = Convert.ToBase64String(GzipUtils.Compress(iconCompressed));
+                infoxml.Append("\t<icon compression=\"gzip\">" + base64Icon + "</icon>\n");
+            }
+
             infoxml.Append("\t<files>\n");
 
             ProcessDirectory(this.info, 2, ref infoxml);

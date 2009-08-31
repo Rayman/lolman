@@ -63,6 +63,7 @@
     <Compile Include="FormIcon.designer.cs">
       <DependentUpon>FormIcon.cs</DependentUpon>
     </Compile>
+    <Compile Include="GzipUtils.cs" />
     <Compile Include="IconExtractor.cs" />
     <Compile Include="IconPickerDialog.cs">
       <SubType>Component</SubType>

@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
-using System.Threading;
+using System.Windows.Forms;
 
 namespace LanOfLegends.lolgen2
 {
@@ -38,7 +33,7 @@ namespace LanOfLegends.lolgen2
             try
             {
                 string folder = (new DirectoryInfo(textBoxFolder.Text + Path.DirectorySeparatorChar)).ToString();
-                backgroundWorker = new DirectorySummer(folder, "asdf");
+                backgroundWorker = new DirectorySummer(folder, textBoxGameName.Text, this.lolIcon);
                 backgroundWorker.ProgressChanged += new ProgressChangedEventHandler(summerProgressChanged);
                 backgroundWorker.RunWorkerCompleted += delegate(object send, RunWorkerCompletedEventArgs args)
                 {

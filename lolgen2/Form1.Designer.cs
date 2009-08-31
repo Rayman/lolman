@@ -34,7 +34,7 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.buttonStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxGameName = new System.Windows.Forms.TextBox();
             this.buttonGetIcon = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.txtSelectedIcon = new System.Windows.Forms.TextBox();
@@ -94,12 +94,12 @@
             this.label1.TabIndex = 5;
             this.label1.Text = "Game name:";
             // 
-            // textBox1
+            // textBoxGameName
             // 
-            this.textBox1.Location = new System.Drawing.Point(102, 40);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(350, 20);
-            this.textBox1.TabIndex = 6;
+            this.textBoxGameName.Location = new System.Drawing.Point(102, 40);
+            this.textBoxGameName.Name = "textBoxGameName";
+            this.textBoxGameName.Size = new System.Drawing.Size(350, 20);
+            this.textBoxGameName.TabIndex = 6;
             // 
             // buttonGetIcon
             // 
@@ -147,7 +147,7 @@
             this.Controls.Add(this.txtSelectedIcon);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.buttonGetIcon);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBoxGameName);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.progressBar1);
@@ -170,7 +170,7 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxGameName;
         private System.Windows.Forms.Button buttonGetIcon;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtSelectedIcon;
