@@ -57,5 +57,19 @@ namespace LanOfLegends.lolgen2
             this.progressBar1.Value = e.ProgressPercentage;
             this.labelStatus.Text = e.UserState as string;
         }
+
+        internal Icon lolIcon;
+
+        private void buttonGetIcon_Click(object sender, EventArgs e)
+        {
+            FormIcon dialog = new FormIcon();
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                if (this.lolIcon != null)
+                {
+                    pictureBox1.Image = this.lolIcon.ToBitmap();
+                }
+            }
+        }
     }
 }
