@@ -4,6 +4,8 @@ updateserverinfo/bin
 updateserverinfo/obj
 lolgen/bin
 lolgen/obj
+lolgen2/bin
+lolgen2/obj
 
 *.user
 *.suo
