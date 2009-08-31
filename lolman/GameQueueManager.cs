@@ -62,9 +62,9 @@ namespace LanOfLegends.lolman
         internal GameQueueManager()
         {
             if (!File.Exists(queueFileName))
-                File.Create(queueFileName);
+                File.Create(queueFileName).Close();
             if (!File.Exists(doneFileName))
-                File.Create(doneFileName);
+                File.Create(doneFileName).Close();
         }
 
         internal void AddToQueue(string infoHash, string localPath)

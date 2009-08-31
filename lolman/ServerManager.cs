@@ -19,7 +19,7 @@ namespace LanOfLegends.lolman
             this.fileName = fileName;
 
             if (!File.Exists(fileName))
-                File.Create(fileName);
+                File.Create(fileName).Close();
         }
 
         /// <summary>Add a server to the server list</summary>
