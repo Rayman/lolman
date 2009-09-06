@@ -52,6 +52,8 @@ namespace LanOfLegends.lolman
         public List<string> urls;
         public string local { get; set; }
         public string statusInfo { get { return urls.Count.ToString() + " servers"; } }
+
+        public string icon { get; set; }
     }
 
     class GameQueueManager

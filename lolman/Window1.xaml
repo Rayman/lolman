@@ -25,8 +25,15 @@
                         <ListView Name="ListViewGameList" ItemsSource="{Binding}" GridViewColumnHeader.Click="OnGameListHeaderClick">
                             <ListView.View>
                                 <GridView>
+                                    <GridViewColumn Width="50"  Header="Icon">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Image Source="{Binding Path=icon}" Height="40"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
                                     <GridViewColumn Width="400" Header="Name"   DisplayMemberBinding="{Binding Path=name}" />
-                                    <GridViewColumn Width="70" Header="Size"    DisplayMemberBinding="{Binding Path=sizeHumanReadable}" />
+                                    <GridViewColumn Width="70"  Header="Size"   DisplayMemberBinding="{Binding Path=sizeHumanReadable}" />
                                     <GridViewColumn Width="200" Header="Status" DisplayMemberBinding="{Binding Path=statusInfo}" />
                                     <GridViewColumn Width="200" Header="Local"  DisplayMemberBinding="{Binding Path=local}" />
                                 </GridView>

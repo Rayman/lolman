@@ -423,6 +423,11 @@ namespace LanOfLegends.lolman
 
                             if (node.Name == "infohash")
                                 game.infohash = node.InnerText;
+
+                            if (node.Name == "icon")
+                            {
+                                game.icon = "asdf.png";
+                            }
                         }
                     }
                     catch (Exception ex)
