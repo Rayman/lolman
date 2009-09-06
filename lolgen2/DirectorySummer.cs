@@ -65,20 +65,20 @@ namespace LanOfLegends.lolgen2
 
             //Icon as string
             MemoryStream ms = new MemoryStream();
-            ico.Save(ms);
+            ico.ToBitmap().Save(ms, System.Drawing.Imaging.ImageFormat.Png);
 
             //Compress if smaller
             byte[] icon = ms.ToArray();
             ms.Close();
             byte[] iconCompressed = GzipUtils.Compress(icon);
-            if (icon.Length < iconCompressed.Length)
+            if (icon.Length < iconCompressed.Length + 20) //For the extra text
             {
-                string base64Icon = Convert.ToBase64String(GzipUtils.Compress(icon));
+                string base64Icon = Convert.ToBase64String(icon);
                 infoxml.Append("\t<icon>" + base64Icon + "</icon>\n");
             }
             else
             {
-                string base64Icon = Convert.ToBase64String(GzipUtils.Compress(iconCompressed));
+                string base64Icon = Convert.ToBase64String(iconCompressed);
                 infoxml.Append("\t<icon compression=\"gzip\">" + base64Icon + "</icon>\n");
             }
 
