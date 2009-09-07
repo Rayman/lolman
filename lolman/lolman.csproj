@@ -72,6 +72,8 @@
     <Compile Include="DownloadThread.cs" />
     <Compile Include="GameInstaller.cs" />
     <Compile Include="GameQueueManager.cs" />
+    <Compile Include="GzipUtils.cs" />
+    <Compile Include="ImageConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -98,7 +100,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="asdf.png" />
+    <Content Include="icons\question.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

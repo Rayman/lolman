@@ -53,7 +53,7 @@ namespace LanOfLegends.lolman
         public string local { get; set; }
         public string statusInfo { get { return urls.Count.ToString() + " servers"; } }
 
-        public string icon { get; set; }
+        public byte[] icon { get; set; }
     }
 
     class GameQueueManager

@@ -5,7 +5,7 @@ using System.Text;
 using System.IO.Compression;
 using System.IO;
 
-namespace LanOfLegends.lolgen2
+namespace LanOfLegends.lolman
 {
     class GzipUtils
     {
