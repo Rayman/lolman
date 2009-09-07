@@ -79,6 +79,10 @@ namespace LanOfLegends.lolman
 
         bool downloadDone;
 
+        //Hold the total size
+        //public Int64 totalSize = 0;
+        public Int64 sizeToDo = 0;
+
         internal GameInstaller(LolGame game)
         {
             if (!Directory.Exists(game.local))
@@ -161,6 +165,7 @@ namespace LanOfLegends.lolman
                 file.localUrl = localName;
                 file.path = path;
                 file.length = length;
+
                 if (node.HasChildNodes)
                 {
                     file.parts = new List<FilePart>();
@@ -202,6 +207,7 @@ namespace LanOfLegends.lolman
                 if (!File.Exists(file.localUrl) || (new FileInfo(file.localUrl)).Length != file.length)
                 {
                     todo.Add(file);
+                    this.sizeToDo += file.length;
                 }
             }
 
@@ -210,13 +216,15 @@ namespace LanOfLegends.lolman
             //log
             this.parent.ReportProgress(
                 0,
-                new InstallChangedEventArgs(
-                    InstallChangedEventType.log,
-                    string.Format(
+                new InstallChangedEventArgs
+                {
+                    type = InstallChangedEventType.log,
+                    message = string.Format(
                         "Scanning done! {0} files that should be downloaded.",
                         this.toDoFiles.Count
-                    )
-                )
+                    ),
+                    fileSize = this.sizeToDo
+                }
             );
         }
 
@@ -298,6 +306,7 @@ namespace LanOfLegends.lolman
 
         void ThreadDownloadCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            //Set the manualresetevent so the GameInstaller stops waiting and searches for an other file to download
             DownloadThread th = (DownloadThread)e.Result;
             ManualResetEvent mre = th.mre;
             mre.Set();

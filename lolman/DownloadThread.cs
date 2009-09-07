@@ -53,6 +53,7 @@ namespace LanOfLegends.lolman
             //Update GUI
             prog.type = InstallChangedEventType.verifyingStart;
             prog.downloadTime = time.TotalSeconds;
+            prog.fileSize = this.filesize;
             this.parent.ReportProgress(0, prog);
 
             SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider();

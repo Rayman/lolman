@@ -80,9 +80,12 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Downloads" Name="tabItem4">
-                <DockPanel>
-                    <TextBox DockPanel.Dock="Top" Name="textBoxDownloads" IsReadOnly="True"></TextBox>
-                    <ListView Name="ListViewDownloads" ItemsSource="{Binding}">
+                <DockPanel LastChildFill="True">
+                    <DockPanel DockPanel.Dock="Top">
+                        <TextBox DockPanel.Dock="Left" Name="textBoxDownloads" Width="300" IsReadOnly="True"/>
+                        <ProgressBar DockPanel.Dock="Top" Margin="6,0,0,0" Name="progressBarDownloads" />
+                    </DockPanel>
+                    <ListView Name="ListViewDownloads" ItemsSource="{Binding}" DockPanel.Dock="Top">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Width="400" Header="File name" DisplayMemberBinding="{Binding Name}" />
@@ -91,6 +94,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+
                 </DockPanel>
             </TabItem>
             <TabItem Header="Servers" Name="tabItem5">

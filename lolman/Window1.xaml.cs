@@ -302,6 +302,8 @@ namespace LanOfLegends.lolman
                     DataRow row2 = downloadTable.Rows.Find(drp.remoteName);
                     row2["Status"] = "Verifying";
 
+                    progressBarDownloads.Value += drp.fileSize;
+
                     //Calculate the download speed
                     FileSpeedInfo info = new FileSpeedInfo();
                     info.fileSize = drp.fileSize;
@@ -623,7 +625,22 @@ namespace LanOfLegends.lolman
             gameInstaller.parent = (BackgroundWorker)sender;
             gameInstaller.ParseXML();
             gameInstaller.FastScanMissing();
+
+            //Set the progressbar
+            progressBarDownloads.Dispatcher.Invoke((Action)delegate()
+            {
+                progressBarDownloads.Minimum = 0;
+                progressBarDownloads.Maximum = gameInstaller.game.size;
+                progressBarDownloads.Value = gameInstaller.game.size - gameInstaller.sizeToDo;
+            });
+
             gameInstaller.DownloadToDo();
+
+            //Set the progressbar
+            textBoxDownloads.Dispatcher.Invoke((Action)delegate()
+            {
+                textBoxDownloads.Text = "Done!";
+            });
 #if (!debug)
             }catch (Exception ex) { MessageBox.Show(ex.Message); }
 #endif
