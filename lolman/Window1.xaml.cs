@@ -429,13 +429,11 @@ namespace LanOfLegends.lolman
                             if (node.Name == "icon")
                             {
                                 XmlAttribute att = node.Attributes["compression"];
+                                game.icon = Convert.FromBase64String(node.InnerText);
+
                                 if (att != null && att.InnerText == "gzip")
                                 {
-                                    game.icon = GzipUtils.Decompress(Convert.FromBase64String(node.InnerText));
-                                }
-                                else
-                                {
-                                    game.icon = Convert.FromBase64String(node.InnerText);
+                                    game.icon = GzipUtils.Decompress(game.icon);
                                 }
                             }
                         }
