@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace LanOfLegends.lolgen2
 {
@@ -63,6 +64,58 @@ namespace LanOfLegends.lolgen2
                 if (this.lolIcon != null)
                 {
                     pictureBox1.Image = this.lolIcon.ToBitmap();
+                }
+            }
+        }
+
+        private void textBoxFolder_Changed(object sender, EventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                DirectoryInfo info = new DirectoryInfo(textBoxFolder.Text);
+                textBoxGameName.Text = info.Name;
+                FileInfo file = new FileInfo(info.FullName + Path.DirectorySeparatorChar + "lol.info.xml");
+                if (file.Exists)
+                {
+                    using (FileStream fs = file.OpenRead())
+                    {
+                        try
+                        {
+                            XmlDocument doc = new XmlDocument();
+                            doc.Load(fs);
+                            XmlElement root = doc.DocumentElement;
+                            foreach (XmlNode child in root.ChildNodes)
+                            {
+                                if (child.Name == "name")
+                                {
+                                    textBoxGameName.Text = child.InnerText;
+                                }
+                                else if (child.Name == "icon")
+                                {
+                                    byte[] data;
+                                    XmlAttribute att = child.Attributes["compression"];
+
+                                    data = Convert.FromBase64String(child.InnerText);
+
+                                    if (att != null && att.Value == "gzip")
+                                    {
+                                        data = GzipUtils.Decompress(data);
+                                    }
+
+                                    using (MemoryStream ms = new MemoryStream(data))
+                                    {
+                                        Bitmap bmp = new Bitmap(ms);
+                                        pictureBox1.Image = bmp;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            return;
+                        }
+                    }
                 }
             }
         }

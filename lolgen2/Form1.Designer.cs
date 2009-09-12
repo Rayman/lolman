@@ -37,7 +37,6 @@
             this.textBoxGameName = new System.Windows.Forms.TextBox();
             this.buttonGetIcon = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtSelectedIcon = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -58,6 +57,7 @@
             this.textBoxFolder.Name = "textBoxFolder";
             this.textBoxFolder.Size = new System.Drawing.Size(350, 20);
             this.textBoxFolder.TabIndex = 1;
+            this.textBoxFolder.TextChanged += new System.EventHandler(this.textBoxFolder_Changed);
             // 
             // labelStatus
             // 
@@ -120,13 +120,6 @@
             this.label2.TabIndex = 8;
             this.label2.Text = "Game Directory:";
             // 
-            // txtSelectedIcon
-            // 
-            this.txtSelectedIcon.Location = new System.Drawing.Point(102, 109);
-            this.txtSelectedIcon.Name = "txtSelectedIcon";
-            this.txtSelectedIcon.Size = new System.Drawing.Size(350, 20);
-            this.txtSelectedIcon.TabIndex = 9;
-            // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.SystemColors.Window;
@@ -144,7 +137,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(563, 147);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.txtSelectedIcon);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.buttonGetIcon);
             this.Controls.Add(this.textBoxGameName);
@@ -173,7 +165,6 @@
         private System.Windows.Forms.TextBox textBoxGameName;
         private System.Windows.Forms.Button buttonGetIcon;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtSelectedIcon;
         private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
