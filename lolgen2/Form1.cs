@@ -33,8 +33,28 @@ namespace LanOfLegends.lolgen2
         {
             try
             {
+                //Get the folder
                 string folder = (new DirectoryInfo(textBoxFolder.Text + Path.DirectorySeparatorChar)).ToString();
-                backgroundWorker = new DirectorySummer(folder, textBoxGameName.Text, this.lolIcon);
+
+                //Get the icon
+                if (this.lolIcon == null)
+                {
+                    Bitmap bmp = this.pictureBox1.Image as Bitmap;
+                    if (bmp != null)
+                    {
+                        backgroundWorker = new DirectorySummer(folder, textBoxGameName.Text, bmp);
+                    }
+                    else
+                    {
+                        backgroundWorker = new DirectorySummer(folder, textBoxGameName.Text);
+                    }
+                }
+                else
+                {
+                    backgroundWorker = new DirectorySummer(folder, textBoxGameName.Text, this.lolIcon.ToBitmap());
+                }
+
+                //Add some event handlers
                 backgroundWorker.ProgressChanged += new ProgressChangedEventHandler(summerProgressChanged);
                 backgroundWorker.RunWorkerCompleted += delegate(object send, RunWorkerCompletedEventArgs args)
                 {
@@ -73,6 +93,7 @@ namespace LanOfLegends.lolgen2
             var textBox = sender as TextBox;
             if (textBox != null)
             {
+                //Search for a lol.info.xml, and get all info from it so the user don't have to
                 DirectoryInfo info = new DirectoryInfo(textBoxFolder.Text);
                 textBoxGameName.Text = info.Name;
                 FileInfo file = new FileInfo(info.FullName + Path.DirectorySeparatorChar + "lol.info.xml");

@@ -23,7 +23,7 @@ namespace LanOfLegends.lolgen2
         string name; //The name of the game
         List<string> gameHash = new List<string>();
 
-        Icon ico = null;
+        Bitmap ico = null;
 
         public DirectorySummer(string dir, string name)
         {
@@ -31,7 +31,7 @@ namespace LanOfLegends.lolgen2
             InitSummer(dir);
         }
 
-        public DirectorySummer(string dir, string name, Icon ico)
+        public DirectorySummer(string dir, string name, Bitmap ico)
         {
             this.name = name;
             this.ico = ico;
@@ -63,28 +63,35 @@ namespace LanOfLegends.lolgen2
             infoxml.Append("<install type=\"game\" version=\"1.1\">\n");
             infoxml.Append("\t<name>" + this.name + "</name>\n");
 
-            //Icon as string
-            MemoryStream ms = new MemoryStream();
-            ico.ToBitmap().Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-
-            //Compress if smaller
-            byte[] icon = ms.ToArray();
-            ms.Close();
-            byte[] iconCompressed = GzipUtils.Compress(icon);
-            if (icon.Length < iconCompressed.Length + 20) //For the extra text
+            //If an icon is selected by the user
+            if (this.ico != null)
             {
-                string base64Icon = Convert.ToBase64String(icon);
-                infoxml.Append("\t<icon>" + base64Icon + "</icon>\n");
-            }
-            else
-            {
-                string base64Icon = Convert.ToBase64String(iconCompressed);
-                infoxml.Append("\t<icon compression=\"gzip\">" + base64Icon + "</icon>\n");
+                //convert save as .png in a byte[]
+                byte[] icon;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    ico.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    icon = ms.ToArray();
+                }
+
+                //Test if compression is needed
+                byte[] iconCompressed = GzipUtils.Compress(icon);
+                if (icon.Length < iconCompressed.Length + 20) //For the extra text
+                {
+                    string base64Icon = Convert.ToBase64String(icon);
+                    infoxml.Append("\t<icon>" + base64Icon + "</icon>\n");
+                }
+                else
+                {
+                    string base64Icon = Convert.ToBase64String(iconCompressed);
+                    infoxml.Append("\t<icon compression=\"gzip\">" + base64Icon + "</icon>\n");
+                }
             }
 
+            //Add all info about the files to the lol.info.xml
             infoxml.Append("\t<files>\n");
-
             ProcessDirectory(this.info, 2, ref infoxml);
+            infoxml.Append("\t</files>\n");
 
             //Calculate the infohash
             var sha1 = new System.Security.Cryptography.SHA1CryptoServiceProvider();
@@ -93,14 +100,16 @@ namespace LanOfLegends.lolgen2
             foreach (string s in this.gameHash)
                 concat.Append(s);
             var hash = Convert.ToBase64String(sha1.ComputeHash(Encoding.Default.GetBytes(concat.ToString())));
-
-            infoxml.Append("\t</files>\n");
             infoxml.Append("\t<infohash>" + hash + "</infohash>\n");
+
+            //the end of the document
             infoxml.Append("</install>\n");
 
-            StreamWriter sw = new StreamWriter(this.info.FullName + "/lol.info.xml");
-            sw.Write(infoxml.ToString());
-            sw.Close();
+            //Write it to a file
+            using (StreamWriter sw = new StreamWriter(this.info.FullName + "/lol.info.xml"))
+            {
+                sw.Write(infoxml.ToString());
+            }
         }
 
         protected void ProcessDirectory(DirectoryInfo dir, int depth, ref StringBuilder infoxml)
@@ -115,73 +124,87 @@ namespace LanOfLegends.lolgen2
 
                 //Open the file to sha1 it's contents
                 this.message = file.FullName;
-                Stream s = File.OpenRead(file.FullName);
-
-                //If biggen than 1.5 * maxsumsize, it must be splitted in parts
-                if (file.Length * 2 < maxSumSize * 3)
+                using (Stream s = File.OpenRead(file.FullName))
                 {
-                    string base64hash = Convert.ToBase64String(summer.ComputeHash(s));
-
-                    //Write it to the file
-                    for (int i = 0; i < depth; i++) infoxml.Append('\t');
-                    infoxml.AppendFormat("<file name=\"{0}\" length=\"{1}\" sha1sum=\"{2}\" />\n",
-                                         file.Name,
-                                         file.Length,
-                                         base64hash
-                                         );
-
-                    //Write progress to console
-                    this.progress += file.Length;
-                    this.ReportProgress();
-
-                    //For the infohash
-                    this.gameHash.Add(string.Format("{0}\0{1}\0{2}\n", file.Name, file.Length, base64hash));
-                }
-                else
-                {
-                    //Write stuff to file
-                    for (int i = 0; i < depth; i++) infoxml.Append('\t');
-                    infoxml.AppendFormat("<file name=\"{0}\" length=\"{1}\">\n",
-                                         file.Name,
-                                         file.Length
-                                         );
-                    //enumerate all parts
-                    byte[] buffer = new byte[maxSumSize];
-                    BinaryReader br = new BinaryReader(s);
-                    int pos = 0;
-
-                    //For the infohash
-                    this.gameHash.Add(string.Format("{0}\0{1}\0", file.Name, file.Length));
-
-                    do
+                    //If biggen than 1.5 * maxsumsize, it must be splitted in parts
+                    if (file.Length * 2 < maxSumSize * 3)
                     {
-                        int read = br.Read(buffer, 0, (int)maxSumSize);
-                        pos += read;
-                        if (read == 0)
-                            break;
-                        string hash = Convert.ToBase64String(summer.ComputeHash(buffer));
+                        string base64hash = Convert.ToBase64String(summer.ComputeHash(s));
 
-                        //Write to file
-                        for (int i = 0; i <= depth; i++) infoxml.Append('\t');
-                        infoxml.AppendFormat("<part length=\"{0}\" sha1sum=\"{1}\" />\n",
-                                             read,
-                                             hash
-                                             );
+                        //Write it to the file
+                        for (int i = 0; i < depth; i++) infoxml.Append('\t');
+                        infoxml.AppendFormat(
+                            "<file name=\"{0}\" length=\"{1}\" sha1sum=\"{2}\" />\n",
+                            file.Name,
+                            file.Length,
+                            base64hash
+                        );
+
                         //Write progress to console
-                        this.progress += read;
+                        this.progress += file.Length;
                         this.ReportProgress();
 
                         //For the infohash
-                        this.gameHash.Add(hash);
+                        this.gameHash.Add(
+                            string.Format(
+                                "{0}\0{1}\0{2}\n",
+                                file.Name,
+                                file.Length,
+                                base64hash
+                            )
+                        );
                     }
-                    while (true);
-                    br.Close();
+                    else
+                    {
+                        //Write stuff to file
+                        for (int i = 0; i < depth; i++) infoxml.Append('\t');
+                        infoxml.AppendFormat(
+                            "<file name=\"{0}\" length=\"{1}\">\n",
+                            file.Name,
+                            file.Length
+                        );
 
-                    for (int i = 0; i < depth; i++) infoxml.Append('\t');
-                    infoxml.AppendFormat("</file>\n");
+                        //enumerate all parts and calculate the sha1sum for it
+                        byte[] buffer = new byte[maxSumSize];
 
-                    //For the infohash
-                    this.gameHash.Add("\n");
+                        using (BinaryReader br = new BinaryReader(s))
+                        {
+                            //For the infohash
+                            this.gameHash.Add(string.Format("{0}\0{1}\0", file.Name, file.Length));
+
+                            do
+                            {
+                                //Read the next part from the file and calculate hash
+                                int read = br.Read(buffer, 0, (int)maxSumSize);
+                                if (read == 0)
+                                    break;
+                                string hash = Convert.ToBase64String(summer.ComputeHash(buffer));
+
+                                //Write to file
+                                for (int i = 0; i <= depth; i++) infoxml.Append('\t');
+                                infoxml.AppendFormat(
+                                    "<part length=\"{0}\" sha1sum=\"{1}\" />\n",
+                                    read,
+                                    hash
+                                );
+
+                                //Write progress to console
+                                this.progress += read;
+                                this.ReportProgress();
+
+                                //For the infohash
+                                this.gameHash.Add(hash);
+                            }
+                            while (true);
+
+                            //Write the end of the file to the lol.info.xml
+                            for (int i = 0; i < depth; i++) infoxml.Append('\t');
+                            infoxml.Append("</file>\n");
+
+                            //For the infohash
+                            this.gameHash.Add("\n");
+                        }
+                    }
                 }
             }
 
